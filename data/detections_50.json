@@ -1,0 +1,3083 @@
+[
+  {
+    "image_file": "M000573-t.jpeg",
+    "detections": []
+  },
+  {
+    "image_file": "irn523904.jpeg",
+    "detections": [
+      {
+        "label": "sun",
+        "category": "Nature & Outdoor Features",
+        "score": 0.509,
+        "bbox": [
+          644.8,
+          24.1,
+          755.5,
+          126.7
+        ]
+      },
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.395,
+        "bbox": [
+          199.6,
+          152.0,
+          225.2,
+          168.7
+        ]
+      },
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.266,
+        "bbox": [
+          525.9,
+          151.0,
+          547.5,
+          169.6
+        ]
+      },
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.344,
+        "bbox": [
+          228.7,
+          167.9,
+          248.4,
+          184.5
+        ]
+      },
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.287,
+        "bbox": [
+          261.3,
+          173.2,
+          280.0,
+          184.8
+        ]
+      },
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.267,
+        "bbox": [
+          282.6,
+          168.9,
+          303.3,
+          183.6
+        ]
+      },
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.268,
+        "bbox": [
+          393.5,
+          168.6,
+          414.5,
+          184.4
+        ]
+      },
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.355,
+        "bbox": [
+          102.9,
+          238.2,
+          125.1,
+          256.1
+        ]
+      },
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.348,
+        "bbox": [
+          303.8,
+          275.8,
+          334.5,
+          299.1
+        ]
+      },
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.422,
+        "bbox": [
+          280.4,
+          279.4,
+          306.2,
+          304.7
+        ]
+      },
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.395,
+        "bbox": [
+          240.0,
+          303.5,
+          268.5,
+          328.1
+        ]
+      },
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.305,
+        "bbox": [
+          521.1,
+          325.4,
+          544.3,
+          343.7
+        ]
+      },
+      {
+        "label": "group of people",
+        "category": "People & Clothing",
+        "score": 0.346,
+        "bbox": [
+          107.4,
+          147.4,
+          557.3,
+          521.5
+        ]
+      },
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.288,
+        "bbox": [
+          399.3,
+          370.8,
+          425.4,
+          394.1
+        ]
+      },
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.298,
+        "bbox": [
+          364.5,
+          385.5,
+          393.3,
+          413.6
+        ]
+      }
+    ]
+  },
+  {
+    "image_file": "pa1137619.jpeg",
+    "detections": [
+      {
+        "label": "person",
+        "category": "People & Clothing",
+        "bbox": [
+          208.25660377358489,
+          201.65289256198346,
+          702.4528301886792,
+          922.3140495867768
+        ]
+      }
+    ]
+  },
+  {
+    "image_file": "irn33117.jpeg",
+    "detections": [
+      {
+        "label": "shovel",
+        "category": "Weapons & Tools",
+        "score": 0.545,
+        "bbox": [
+          165.5,
+          239.3,
+          273.9,
+          566.3
+        ]
+      },
+      {
+        "label": "person",
+        "category": "People & Clothing",
+        "score": 0.331,
+        "bbox": [
+          176.5,
+          152.5,
+          357.2,
+          559.8
+        ]
+      },
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.274,
+        "bbox": [
+          393.1,
+          477.3,
+          410.2,
+          487.5
+        ]
+      },
+      {
+        "label": "person",
+        "category": "People & Clothing",
+        "score": 0.328,
+        "bbox": [
+          358.1,
+          476.6,
+          438.1,
+          545.1
+        ]
+      },
+      {
+        "label": "person",
+        "category": "People & Clothing",
+        "score": 0.257,
+        "bbox": [
+          394.8,
+          506.1,
+          448.0,
+          539.1
+        ]
+      }
+    ]
+  },
+  {
+    "image_file": "irn4429.jpeg",
+    "detections": [
+      {
+        "label": "book",
+        "category": "Miscellaneous",
+        "score": 0.444,
+        "bbox": [
+          354.1,
+          305.5,
+          504.0,
+          399.8
+        ]
+      },
+      {
+        "label": "person",
+        "category": "People & Clothing",
+        "score": 0.321,
+        "bbox": [
+          132.7,
+          94.2,
+          571.5,
+          742.3
+        ]
+      },
+      {
+        "label": "stool",
+        "category": "Furniture & Indoor Objects",
+        "score": 0.594,
+        "bbox": [
+          137.8,
+          485.5,
+          362.7,
+          708.0
+        ]
+      }
+    ]
+  },
+  {
+    "image_file": "pa1131076.jpeg",
+    "detections": []
+  },
+  {
+    "image_file": "irn6746.jpeg",
+    "detections": [
+      {
+        "label": "cat",
+        "category": "Animals",
+        "score": 0.336,
+        "bbox": [
+          108.3,
+          51.3,
+          695.8,
+          521.6
+        ]
+      }
+    ]
+  },
+  {
+    "image_file": "irn509052.jpeg",
+    "detections": []
+  },
+  {
+    "image_file": "irn516153.jpeg",
+    "detections": [
+      {
+        "label": "house",
+        "category": "Buildings & Infrastructure",
+        "score": 0.309,
+        "bbox": [
+          11.7,
+          41.8,
+          94.5,
+          238.8
+        ]
+      },
+      {
+        "label": "chimney",
+        "category": "Buildings & Infrastructure",
+        "score": 0.564,
+        "bbox": [
+          101.8,
+          147.0,
+          116.9,
+          160.6
+        ]
+      },
+      {
+        "label": "house",
+        "category": "Buildings & Infrastructure",
+        "score": 0.429,
+        "bbox": [
+          133.8,
+          155.5,
+          216.5,
+          244.5
+        ]
+      },
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.643,
+        "bbox": [
+          452.9,
+          187.7,
+          495.0,
+          219.1
+        ]
+      },
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.443,
+        "bbox": [
+          43.4,
+          222.6,
+          59.3,
+          234.6
+        ]
+      },
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.373,
+        "bbox": [
+          108.4,
+          229.3,
+          124.4,
+          242.8
+        ]
+      },
+      {
+        "label": "person",
+        "category": "People & Clothing",
+        "score": 0.321,
+        "bbox": [
+          13.0,
+          222.9,
+          62.7,
+          322.8
+        ]
+      },
+      {
+        "label": "person",
+        "category": "People & Clothing",
+        "score": 0.319,
+        "bbox": [
+          44.7,
+          224.4,
+          99.1,
+          316.0
+        ]
+      },
+      {
+        "label": "person",
+        "category": "People & Clothing",
+        "score": 0.318,
+        "bbox": [
+          106.1,
+          229.0,
+          137.0,
+          263.3
+        ]
+      },
+      {
+        "label": "bucket",
+        "category": "Miscellaneous",
+        "score": 0.255,
+        "bbox": [
+          103.2,
+          257.8,
+          137.4,
+          303.9
+        ]
+      },
+      {
+        "label": "bucket",
+        "category": "Miscellaneous",
+        "score": 0.316,
+        "bbox": [
+          61.4,
+          258.5,
+          105.4,
+          317.5
+        ]
+      },
+      {
+        "label": "ladder",
+        "category": "Weapons & Tools",
+        "score": 0.349,
+        "bbox": [
+          402.2,
+          264.0,
+          450.4,
+          350.1
+        ]
+      },
+      {
+        "label": "bucket",
+        "category": "Miscellaneous",
+        "score": 0.442,
+        "bbox": [
+          435.6,
+          276.1,
+          520.4,
+          366.3
+        ]
+      },
+      {
+        "label": "person",
+        "category": "People & Clothing",
+        "score": 0.331,
+        "bbox": [
+          101.9,
+          45.9,
+          519.5,
+          747.7
+        ]
+      },
+      {
+        "label": "barefoot",
+        "category": "People & Clothing",
+        "score": 0.392,
+        "bbox": [
+          86.7,
+          589.7,
+          152.3,
+          714.8
+        ]
+      },
+      {
+        "label": "barefoot",
+        "category": "People & Clothing",
+        "score": 0.466,
+        "bbox": [
+          308.4,
+          661.7,
+          415.5,
+          723.7
+        ]
+      }
+    ]
+  },
+  {
+    "image_file": "irn85.jpeg",
+    "detections": [
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.291,
+        "bbox": [
+          513.2,
+          62.3,
+          604.3,
+          216.5
+        ]
+      },
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.291,
+        "bbox": [
+          434.9,
+          103.9,
+          517.1,
+          167.6
+        ]
+      },
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.461,
+        "bbox": [
+          354.6,
+          143.6,
+          431.1,
+          210.0
+        ]
+      },
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.469,
+        "bbox": [
+          185.3,
+          285.1,
+          248.7,
+          319.6
+        ]
+      },
+      {
+        "label": "person",
+        "category": "People & Clothing",
+        "score": 0.297,
+        "bbox": [
+          298.1,
+          143.2,
+          485.3,
+          471.1
+        ]
+      },
+      {
+        "label": "person",
+        "category": "People & Clothing",
+        "score": 0.361,
+        "bbox": [
+          354.7,
+          68.5,
+          693.7,
+          574.1
+        ]
+      },
+      {
+        "label": "blanket",
+        "category": "Furniture & Indoor Objects",
+        "score": 0.315,
+        "bbox": [
+          22.7,
+          318.4,
+          292.3,
+          566.2
+        ]
+      },
+      {
+        "label": "bed",
+        "category": "Furniture & Indoor Objects",
+        "score": 0.452,
+        "bbox": [
+          15.3,
+          317.6,
+          782.7,
+          570.3
+        ]
+      },
+      {
+        "label": "bed",
+        "category": "Furniture & Indoor Objects",
+        "score": 0.295,
+        "bbox": [
+          22.5,
+          310.1,
+          466.4,
+          563.1
+        ]
+      }
+    ]
+  },
+  {
+    "image_file": "pa1092369.jpeg",
+    "detections": []
+  },
+  {
+    "image_file": "irn607767.jpeg",
+    "detections": []
+  },
+  {
+    "image_file": "pa1091503.jpeg",
+    "detections": []
+  },
+  {
+    "image_file": "M011015.jpeg",
+    "detections": [
+      {
+        "label": "rope",
+        "category": "Miscellaneous",
+        "score": 0.252,
+        "bbox": [
+          1041.5,
+          103.1,
+          1586.9,
+          308.0
+        ]
+      },
+      {
+        "label": "sleeping quarters",
+        "category": "Buildings & Infrastructure",
+        "score": 0.272,
+        "bbox": [
+          501.8,
+          86.4,
+          1889.0,
+          1112.2
+        ]
+      },
+      {
+        "label": "coat",
+        "category": "People & Clothing",
+        "score": 0.256,
+        "bbox": [
+          626.0,
+          429.0,
+          739.3,
+          821.8
+        ]
+      },
+      {
+        "label": "bucket",
+        "category": "Miscellaneous",
+        "score": 0.28,
+        "bbox": [
+          1654.5,
+          802.3,
+          1724.4,
+          861.8
+        ]
+      },
+      {
+        "label": "table",
+        "category": "Furniture & Indoor Objects",
+        "score": 0.365,
+        "bbox": [
+          1043.7,
+          795.4,
+          1310.9,
+          1024.7
+        ]
+      },
+      {
+        "label": "bird",
+        "category": "Animals",
+        "score": 0.253,
+        "bbox": [
+          1423.0,
+          775.3,
+          1614.9,
+          923.9
+        ]
+      },
+      {
+        "label": "stool",
+        "category": "Furniture & Indoor Objects",
+        "score": 0.445,
+        "bbox": [
+          969.3,
+          883.9,
+          1082.8,
+          1003.5
+        ]
+      }
+    ]
+  },
+  {
+    "image_file": "M011003.jpeg",
+    "detections": [
+      {
+        "label": "chimney",
+        "category": "Buildings & Infrastructure",
+        "score": 0.302,
+        "bbox": [
+          585.5,
+          592.4,
+          624.7,
+          666.4
+        ]
+      },
+      {
+        "label": "chimney",
+        "category": "Buildings & Infrastructure",
+        "score": 0.393,
+        "bbox": [
+          645.6,
+          595.5,
+          674.9,
+          679.6
+        ]
+      },
+      {
+        "label": "chimney",
+        "category": "Buildings & Infrastructure",
+        "score": 0.32,
+        "bbox": [
+          689.3,
+          625.7,
+          782.3,
+          746.5
+        ]
+      },
+      {
+        "label": "chimney",
+        "category": "Buildings & Infrastructure",
+        "score": 0.311,
+        "bbox": [
+          783.0,
+          672.1,
+          804.3,
+          724.6
+        ]
+      },
+      {
+        "label": "house",
+        "category": "Buildings & Infrastructure",
+        "score": 0.5,
+        "bbox": [
+          1249.4,
+          604.9,
+          1634.6,
+          1042.4
+        ]
+      },
+      {
+        "label": "house",
+        "category": "Buildings & Infrastructure",
+        "score": 0.515,
+        "bbox": [
+          530.5,
+          589.8,
+          1037.7,
+          885.3
+        ]
+      }
+    ]
+  },
+  {
+    "image_file": "irn517314.jpeg",
+    "detections": []
+  },
+  {
+    "image_file": "pa1133597.jpeg",
+    "detections": [
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.613,
+        "bbox": [
+          193.5,
+          133.5,
+          446.4,
+          319.0
+        ]
+      },
+      {
+        "label": "nazi symbol",
+        "category": "Symbols & Identification",
+        "score": 0.265,
+        "bbox": [
+          325.9,
+          203.4,
+          346.3,
+          222.7
+        ]
+      },
+      {
+        "label": "nazi symbol",
+        "category": "Symbols & Identification",
+        "score": 0.365,
+        "bbox": [
+          318.3,
+          198.5,
+          352.0,
+          231.8
+        ]
+      },
+      {
+        "label": "nazi symbol",
+        "category": "Symbols & Identification",
+        "score": 0.369,
+        "bbox": [
+          313.2,
+          271.3,
+          355.3,
+          292.9
+        ]
+      },
+      {
+        "label": "uniform",
+        "category": "People & Clothing",
+        "score": 0.307,
+        "bbox": [
+          223.0,
+          549.6,
+          461.9,
+          831.4
+        ]
+      }
+    ]
+  },
+  {
+    "image_file": "irn523734.jpeg",
+    "detections": [
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.45,
+        "bbox": [
+          167.3,
+          195.9,
+          197.7,
+          212.4
+        ]
+      },
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.478,
+        "bbox": [
+          202.8,
+          213.6,
+          231.7,
+          232.6
+        ]
+      },
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.409,
+        "bbox": [
+          120.5,
+          224.4,
+          146.4,
+          251.7
+        ]
+      },
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.383,
+        "bbox": [
+          149.8,
+          238.6,
+          172.3,
+          264.2
+        ]
+      },
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.366,
+        "bbox": [
+          177.9,
+          256.2,
+          201.8,
+          274.6
+        ]
+      },
+      {
+        "label": "person",
+        "category": "People & Clothing",
+        "score": 0.305,
+        "bbox": [
+          203.4,
+          213.1,
+          246.1,
+          352.8
+        ]
+      },
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.361,
+        "bbox": [
+          618.8,
+          253.7,
+          648.7,
+          280.0
+        ]
+      },
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.417,
+        "bbox": [
+          466.1,
+          262.0,
+          494.0,
+          278.8
+        ]
+      },
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.36,
+        "bbox": [
+          572.4,
+          259.5,
+          597.9,
+          278.6
+        ]
+      },
+      {
+        "label": "person",
+        "category": "People & Clothing",
+        "score": 0.284,
+        "bbox": [
+          172.8,
+          253.5,
+          212.5,
+          379.0
+        ]
+      },
+      {
+        "label": "person",
+        "category": "People & Clothing",
+        "score": 0.258,
+        "bbox": [
+          141.5,
+          236.6,
+          179.2,
+          373.2
+        ]
+      },
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.254,
+        "bbox": [
+          584.3,
+          282.7,
+          606.8,
+          310.9
+        ]
+      },
+      {
+        "label": "person",
+        "category": "People & Clothing",
+        "score": 0.252,
+        "bbox": [
+          613.4,
+          254.3,
+          670.1,
+          408.9
+        ]
+      },
+      {
+        "label": "person",
+        "category": "People & Clothing",
+        "score": 0.281,
+        "bbox": [
+          451.5,
+          258.4,
+          519.5,
+          402.4
+        ]
+      },
+      {
+        "label": "person",
+        "category": "People & Clothing",
+        "score": 0.263,
+        "bbox": [
+          577.6,
+          273.5,
+          622.8,
+          408.2
+        ]
+      },
+      {
+        "label": "truck",
+        "category": "Vehicles & Transport",
+        "score": 0.583,
+        "bbox": [
+          238.4,
+          208.0,
+          597.8,
+          400.2
+        ]
+      }
+    ]
+  },
+  {
+    "image_file": "pa1133562.jpeg",
+    "detections": [
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.497,
+        "bbox": [
+          334.8,
+          174.2,
+          775.4,
+          428.3
+        ]
+      }
+    ]
+  },
+  {
+    "image_file": "pa1137673.jpeg",
+    "detections": [
+      {
+        "label": "house",
+        "category": "Buildings & Infrastructure",
+        "score": 0.408,
+        "bbox": [
+          20.3,
+          19.3,
+          783.3,
+          634.8
+        ]
+      },
+      {
+        "label": "flower",
+        "category": "Nature & Outdoor Features",
+        "score": 0.581,
+        "bbox": [
+          325.1,
+          139.1,
+          399.3,
+          214.0
+        ]
+      },
+      {
+        "label": "flower",
+        "category": "Nature & Outdoor Features",
+        "score": 0.57,
+        "bbox": [
+          491.5,
+          131.4,
+          572.9,
+          201.6
+        ]
+      },
+      {
+        "label": "cross",
+        "category": "Miscellaneous",
+        "score": 0.472,
+        "bbox": [
+          695.7,
+          215.8,
+          709.1,
+          243.1
+        ]
+      },
+      {
+        "label": "fireplace",
+        "category": "Buildings & Infrastructure",
+        "score": 0.254,
+        "bbox": [
+          263.9,
+          216.3,
+          604.4,
+          524.6
+        ]
+      },
+      {
+        "label": "shovel",
+        "category": "Weapons & Tools",
+        "score": 0.264,
+        "bbox": [
+          424.2,
+          314.6,
+          447.6,
+          422.4
+        ]
+      },
+      {
+        "label": "bed",
+        "category": "Furniture & Indoor Objects",
+        "score": 0.576,
+        "bbox": [
+          27.0,
+          344.1,
+          310.4,
+          634.2
+        ]
+      },
+      {
+        "label": "fireplace",
+        "category": "Buildings & Infrastructure",
+        "score": 0.272,
+        "bbox": [
+          369.2,
+          272.7,
+          538.7,
+          503.4
+        ]
+      },
+      {
+        "label": "bed",
+        "category": "Furniture & Indoor Objects",
+        "score": 0.599,
+        "bbox": [
+          678.8,
+          371.0,
+          905.1,
+          625.7
+        ]
+      },
+      {
+        "label": "bucket",
+        "category": "Miscellaneous",
+        "score": 0.349,
+        "bbox": [
+          585.8,
+          388.8,
+          637.7,
+          438.4
+        ]
+      },
+      {
+        "label": "blanket",
+        "category": "Furniture & Indoor Objects",
+        "score": 0.274,
+        "bbox": [
+          690.5,
+          390.4,
+          904.1,
+          601.0
+        ]
+      },
+      {
+        "label": "table",
+        "category": "Furniture & Indoor Objects",
+        "score": 0.3,
+        "bbox": [
+          562.0,
+          406.2,
+          671.6,
+          552.1
+        ]
+      },
+      {
+        "label": "table",
+        "category": "Furniture & Indoor Objects",
+        "score": 0.255,
+        "bbox": [
+          25.0,
+          408.9,
+          291.1,
+          611.2
+        ]
+      },
+      {
+        "label": "stool",
+        "category": "Furniture & Indoor Objects",
+        "score": 0.605,
+        "bbox": [
+          242.7,
+          527.5,
+          304.6,
+          607.2
+        ]
+      },
+      {
+        "label": "stairs",
+        "category": "Buildings & Infrastructure",
+        "score": 0.298,
+        "bbox": [
+          822.9,
+          604.9,
+          901.4,
+          728.6
+        ]
+      },
+      {
+        "label": "cabinet",
+        "category": "Furniture & Indoor Objects",
+        "score": 0.297,
+        "bbox": [
+          26.4,
+          746.4,
+          103.3,
+          939.3
+        ]
+      },
+      {
+        "label": "cabinet",
+        "category": "Furniture & Indoor Objects",
+        "score": 0.307,
+        "bbox": [
+          403.2,
+          782.8,
+          448.2,
+          857.8
+        ]
+      },
+      {
+        "label": "cabinet",
+        "category": "Furniture & Indoor Objects",
+        "score": 0.319,
+        "bbox": [
+          544.7,
+          788.3,
+          652.1,
+          934.0
+        ]
+      },
+      {
+        "label": "cabinet",
+        "category": "Furniture & Indoor Objects",
+        "score": 0.277,
+        "bbox": [
+          574.5,
+          813.3,
+          677.6,
+          931.5
+        ]
+      },
+      {
+        "label": "door",
+        "category": "Buildings & Infrastructure",
+        "score": 0.372,
+        "bbox": [
+          247.0,
+          785.6,
+          360.8,
+          1013.3
+        ]
+      },
+      {
+        "label": "cabinet",
+        "category": "Furniture & Indoor Objects",
+        "score": 0.308,
+        "bbox": [
+          561.4,
+          825.7,
+          621.0,
+          929.4
+        ]
+      },
+      {
+        "label": "cabinet",
+        "category": "Furniture & Indoor Objects",
+        "score": 0.295,
+        "bbox": [
+          541.2,
+          783.7,
+          675.1,
+          933.1
+        ]
+      },
+      {
+        "label": "fireplace",
+        "category": "Buildings & Infrastructure",
+        "score": 0.272,
+        "bbox": [
+          137.7,
+          850.0,
+          229.0,
+          935.3
+        ]
+      },
+      {
+        "label": "door",
+        "category": "Buildings & Infrastructure",
+        "score": 0.295,
+        "bbox": [
+          629.5,
+          818.5,
+          694.5,
+          932.0
+        ]
+      },
+      {
+        "label": "cabinet",
+        "category": "Furniture & Indoor Objects",
+        "score": 0.295,
+        "bbox": [
+          456.6,
+          849.0,
+          512.7,
+          979.5
+        ]
+      },
+      {
+        "label": "cabinet",
+        "category": "Furniture & Indoor Objects",
+        "score": 0.334,
+        "bbox": [
+          534.8,
+          782.5,
+          660.7,
+          1024.5
+        ]
+      },
+      {
+        "label": "bed",
+        "category": "Furniture & Indoor Objects",
+        "score": 0.278,
+        "bbox": [
+          708.0,
+          933.5,
+          783.6,
+          992.7
+        ]
+      },
+      {
+        "label": "cabinet",
+        "category": "Furniture & Indoor Objects",
+        "score": 0.402,
+        "bbox": [
+          127.1,
+          917.2,
+          268.7,
+          1080.3
+        ]
+      },
+      {
+        "label": "cabinet",
+        "category": "Furniture & Indoor Objects",
+        "score": 0.29,
+        "bbox": [
+          355.4,
+          776.7,
+          530.9,
+          994.0
+        ]
+      },
+      {
+        "label": "cabinet",
+        "category": "Furniture & Indoor Objects",
+        "score": 0.424,
+        "bbox": [
+          533.7,
+          928.2,
+          623.9,
+          1024.0
+        ]
+      },
+      {
+        "label": "bed",
+        "category": "Furniture & Indoor Objects",
+        "score": 0.476,
+        "bbox": [
+          679.1,
+          933.0,
+          790.8,
+          1124.0
+        ]
+      },
+      {
+        "label": "blanket",
+        "category": "Furniture & Indoor Objects",
+        "score": 0.299,
+        "bbox": [
+          845.6,
+          947.8,
+          898.6,
+          1053.7
+        ]
+      },
+      {
+        "label": "cabinet",
+        "category": "Furniture & Indoor Objects",
+        "score": 0.327,
+        "bbox": [
+          24.9,
+          919.4,
+          121.8,
+          1058.4
+        ]
+      },
+      {
+        "label": "bed",
+        "category": "Furniture & Indoor Objects",
+        "score": 0.313,
+        "bbox": [
+          679.6,
+          984.1,
+          793.7,
+          1122.3
+        ]
+      },
+      {
+        "label": "bed",
+        "category": "Furniture & Indoor Objects",
+        "score": 0.415,
+        "bbox": [
+          828.5,
+          931.3,
+          900.9,
+          1105.4
+        ]
+      }
+    ]
+  },
+  {
+    "image_file": "irn509054.jpeg",
+    "detections": [
+      {
+        "label": "baton",
+        "category": "Weapons & Tools",
+        "score": 0.28,
+        "bbox": [
+          41.4,
+          427.4,
+          315.3,
+          472.5
+        ]
+      }
+    ]
+  },
+  {
+    "image_file": "irn520293.jpeg",
+    "detections": [
+      {
+        "label": "rifle",
+        "category": "Weapons & Tools",
+        "score": 0.571,
+        "bbox": [
+          84.8,
+          167.2,
+          261.3,
+          596.9
+        ]
+      },
+      {
+        "label": "uniform",
+        "category": "People & Clothing",
+        "score": 0.288,
+        "bbox": [
+          65.6,
+          179.1,
+          450.4,
+          636.6
+        ]
+      },
+      {
+        "label": "person",
+        "category": "People & Clothing",
+        "score": 0.315,
+        "bbox": [
+          58.5,
+          122.9,
+          447.7,
+          661.1
+        ]
+      },
+      {
+        "label": "baton",
+        "category": "Weapons & Tools",
+        "score": 0.476,
+        "bbox": [
+          282.5,
+          407.6,
+          474.3,
+          603.8
+        ]
+      }
+    ]
+  },
+  {
+    "image_file": "pa1140172.jpeg",
+    "detections": [
+      {
+        "label": "guard tower",
+        "category": "Buildings & Infrastructure",
+        "score": 0.265,
+        "bbox": [
+          494.2,
+          341.1,
+          630.4,
+          667.3
+        ]
+      },
+      {
+        "label": "bridge",
+        "category": "Buildings & Infrastructure",
+        "score": 0.386,
+        "bbox": [
+          610.7,
+          604.2,
+          1734.7,
+          752.3
+        ]
+      },
+      {
+        "label": "bridge",
+        "category": "Buildings & Infrastructure",
+        "score": 0.311,
+        "bbox": [
+          537.7,
+          628.1,
+          964.6,
+          729.3
+        ]
+      },
+      {
+        "label": "river",
+        "category": "Nature & Outdoor Features",
+        "score": 0.527,
+        "bbox": [
+          8.2,
+          689.4,
+          1759.2,
+          1176.3
+        ]
+      }
+    ]
+  },
+  {
+    "image_file": "pa1133609.jpeg",
+    "detections": []
+  },
+  {
+    "image_file": "irn6190.jpeg",
+    "detections": [
+      {
+        "label": "wagon",
+        "category": "Vehicles & Transport",
+        "score": 0.388,
+        "bbox": [
+          437.8,
+          317.3,
+          566.9,
+          422.2
+        ]
+      },
+      {
+        "label": "train",
+        "category": "Vehicles & Transport",
+        "score": 0.531,
+        "bbox": [
+          56.9,
+          120.8,
+          575.0,
+          505.6
+        ]
+      },
+      {
+        "label": "train",
+        "category": "Vehicles & Transport",
+        "score": 0.626,
+        "bbox": [
+          190.1,
+          282.0,
+          571.0,
+          458.1
+        ]
+      },
+      {
+        "label": "railway track",
+        "category": "Vehicles & Transport",
+        "score": 0.511,
+        "bbox": [
+          78.5,
+          401.7,
+          563.2,
+          534.9
+        ]
+      }
+    ]
+  },
+  {
+    "image_file": "185171.jpeg",
+    "detections": [
+      {
+        "label": "barracks",
+        "category": "Buildings & Infrastructure",
+        "score": 0.253,
+        "bbox": [
+          55.4,
+          117.3,
+          431.2,
+          285.8
+        ]
+      },
+      {
+        "label": "tree",
+        "category": "Nature & Outdoor Features",
+        "score": 0.299,
+        "bbox": [
+          304.1,
+          108.3,
+          431.9,
+          214.2
+        ]
+      },
+      {
+        "label": "house",
+        "category": "Buildings & Infrastructure",
+        "score": 0.547,
+        "bbox": [
+          67.2,
+          148.2,
+          329.6,
+          267.6
+        ]
+      },
+      {
+        "label": "flag",
+        "category": "Miscellaneous",
+        "score": 0.256,
+        "bbox": [
+          54.4,
+          187.3,
+          86.4,
+          238.9
+        ]
+      },
+      {
+        "label": "fence",
+        "category": "Buildings & Infrastructure",
+        "score": 0.254,
+        "bbox": [
+          79.0,
+          177.5,
+          308.2,
+          263.9
+        ]
+      },
+      {
+        "label": "person",
+        "category": "People & Clothing",
+        "score": 0.351,
+        "bbox": [
+          227.0,
+          209.0,
+          274.2,
+          287.5
+        ]
+      },
+      {
+        "label": "person",
+        "category": "People & Clothing",
+        "score": 0.364,
+        "bbox": [
+          387.6,
+          210.8,
+          407.0,
+          260.0
+        ]
+      },
+      {
+        "label": "wagon",
+        "category": "Vehicles & Transport",
+        "score": 0.371,
+        "bbox": [
+          293.1,
+          230.0,
+          342.2,
+          270.5
+        ]
+      },
+      {
+        "label": "coat",
+        "category": "People & Clothing",
+        "score": 0.272,
+        "bbox": [
+          226.7,
+          220.2,
+          255.6,
+          258.7
+        ]
+      },
+      {
+        "label": "bench",
+        "category": "Furniture & Indoor Objects",
+        "score": 0.35,
+        "bbox": [
+          354.1,
+          228.2,
+          432.5,
+          264.5
+        ]
+      },
+      {
+        "label": "bench",
+        "category": "Furniture & Indoor Objects",
+        "score": 0.319,
+        "bbox": [
+          361.3,
+          245.2,
+          432.3,
+          262.3
+        ]
+      },
+      {
+        "label": "stool",
+        "category": "Furniture & Indoor Objects",
+        "score": 0.727,
+        "bbox": [
+          225.6,
+          260.8,
+          255.4,
+          292.1
+        ]
+      }
+    ]
+  },
+  {
+    "image_file": "irn6702.jpeg",
+    "detections": []
+  },
+  {
+    "image_file": "pa1111627.jpeg",
+    "detections": [
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.598,
+        "bbox": [
+          610.6,
+          83.8,
+          730.6,
+          179.5
+        ]
+      },
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.504,
+        "bbox": [
+          216.2,
+          106.5,
+          367.8,
+          225.2
+        ]
+      },
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.565,
+        "bbox": [
+          876.6,
+          102.6,
+          999.9,
+          217.6
+        ]
+      },
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.289,
+        "bbox": [
+          514.4,
+          469.5,
+          679.2,
+          564.9
+        ]
+      },
+      {
+        "label": "person",
+        "category": "People & Clothing",
+        "score": 0.274,
+        "bbox": [
+          29.4,
+          105.2,
+          383.3,
+          1048.4
+        ]
+      }
+    ]
+  },
+  {
+    "image_file": "irn6759.jpeg",
+    "detections": []
+  },
+  {
+    "image_file": "irn9947.jpeg",
+    "detections": []
+  },
+  {
+    "image_file": "irn866.jpeg",
+    "detections": [
+      {
+        "label": "smoke",
+        "category": "Miscellaneous",
+        "score": 0.292,
+        "bbox": [
+          254.9,
+          172.8,
+          346.1,
+          259.1
+        ]
+      },
+      {
+        "label": "smoke",
+        "category": "Miscellaneous",
+        "score": 0.321,
+        "bbox": [
+          111.8,
+          146.8,
+          445.3,
+          533.7
+        ]
+      },
+      {
+        "label": "flag",
+        "category": "Miscellaneous",
+        "score": 0.423,
+        "bbox": [
+          307.4,
+          338.6,
+          336.2,
+          373.6
+        ]
+      },
+      {
+        "label": "person",
+        "category": "People & Clothing",
+        "score": 0.272,
+        "bbox": [
+          173.4,
+          151.3,
+          357.0,
+          562.0
+        ]
+      },
+      {
+        "label": "nazi symbol",
+        "category": "Symbols & Identification",
+        "score": 0.345,
+        "bbox": [
+          388.0,
+          402.3,
+          438.2,
+          453.6
+        ]
+      },
+      {
+        "label": "cross",
+        "category": "Miscellaneous",
+        "score": 0.291,
+        "bbox": [
+          146.8,
+          431.3,
+          161.8,
+          446.5
+        ]
+      },
+      {
+        "label": "cross",
+        "category": "Miscellaneous",
+        "score": 0.335,
+        "bbox": [
+          405.4,
+          433.0,
+          421.9,
+          448.9
+        ]
+      },
+      {
+        "label": "cross",
+        "category": "Miscellaneous",
+        "score": 0.273,
+        "bbox": [
+          143.8,
+          481.1,
+          166.8,
+          505.8
+        ]
+      },
+      {
+        "label": "nazi symbol",
+        "category": "Symbols & Identification",
+        "score": 0.308,
+        "bbox": [
+          401.6,
+          483.5,
+          426.2,
+          507.4
+        ]
+      },
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.283,
+        "bbox": [
+          98.0,
+          509.3,
+          122.0,
+          524.3
+        ]
+      },
+      {
+        "label": "boots",
+        "category": "People & Clothing",
+        "score": 0.304,
+        "bbox": [
+          193.3,
+          495.2,
+          251.4,
+          562.2
+        ]
+      },
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.255,
+        "bbox": [
+          277.1,
+          506.6,
+          301.9,
+          525.0
+        ]
+      },
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.263,
+        "bbox": [
+          327.0,
+          509.9,
+          346.7,
+          524.8
+        ]
+      },
+      {
+        "label": "boots",
+        "category": "People & Clothing",
+        "score": 0.302,
+        "bbox": [
+          296.1,
+          474.8,
+          347.9,
+          561.6
+        ]
+      }
+    ]
+  },
+  {
+    "image_file": "irn6735.jpeg",
+    "detections": [
+      {
+        "label": "cat",
+        "category": "Animals",
+        "score": 0.347,
+        "bbox": [
+          136.5,
+          47.7,
+          675.7,
+          578.1
+        ]
+      }
+    ]
+  },
+  {
+    "image_file": "pa1091432.jpeg",
+    "detections": [
+      {
+        "label": "bird",
+        "category": "Animals",
+        "score": 0.276,
+        "bbox": [
+          439.9,
+          166.8,
+          495.4,
+          199.9
+        ]
+      },
+      {
+        "label": "chimney",
+        "category": "Buildings & Infrastructure",
+        "score": 0.303,
+        "bbox": [
+          233.8,
+          162.5,
+          310.6,
+          660.8
+        ]
+      },
+      {
+        "label": "chimney",
+        "category": "Buildings & Infrastructure",
+        "score": 0.251,
+        "bbox": [
+          572.3,
+          266.3,
+          641.7,
+          690.7
+        ]
+      },
+      {
+        "label": "house",
+        "category": "Buildings & Infrastructure",
+        "score": 0.289,
+        "bbox": [
+          1175.4,
+          386.4,
+          1481.2,
+          685.5
+        ]
+      },
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.268,
+        "bbox": [
+          897.3,
+          513.5,
+          929.2,
+          550.6
+        ]
+      },
+      {
+        "label": "rope",
+        "category": "Miscellaneous",
+        "score": 0.292,
+        "bbox": [
+          546.0,
+          598.5,
+          699.8,
+          650.1
+        ]
+      },
+      {
+        "label": "rope",
+        "category": "Miscellaneous",
+        "score": 0.436,
+        "bbox": [
+          482.6,
+          596.5,
+          699.9,
+          664.4
+        ]
+      },
+      {
+        "label": "bucket",
+        "category": "Miscellaneous",
+        "score": 0.269,
+        "bbox": [
+          402.3,
+          653.7,
+          632.5,
+          828.4
+        ]
+      },
+      {
+        "label": "bucket",
+        "category": "Miscellaneous",
+        "score": 0.269,
+        "bbox": [
+          718.4,
+          613.9,
+          827.0,
+          804.2
+        ]
+      },
+      {
+        "label": "bucket",
+        "category": "Miscellaneous",
+        "score": 0.429,
+        "bbox": [
+          885.5,
+          613.7,
+          1039.3,
+          790.5
+        ]
+      },
+      {
+        "label": "bucket",
+        "category": "Miscellaneous",
+        "score": 0.322,
+        "bbox": [
+          898.9,
+          607.7,
+          1046.6,
+          727.4
+        ]
+      },
+      {
+        "label": "ladder",
+        "category": "Weapons & Tools",
+        "score": 0.264,
+        "bbox": [
+          1027.2,
+          601.2,
+          1283.4,
+          1136.0
+        ]
+      },
+      {
+        "label": "bucket",
+        "category": "Miscellaneous",
+        "score": 0.26,
+        "bbox": [
+          29.4,
+          593.0,
+          327.3,
+          897.6
+        ]
+      },
+      {
+        "label": "barracks",
+        "category": "Buildings & Infrastructure",
+        "score": 0.295,
+        "bbox": [
+          460.0,
+          247.1,
+          1739.6,
+          1124.8
+        ]
+      },
+      {
+        "label": "barbed wire",
+        "category": "Buildings & Infrastructure",
+        "score": 0.277,
+        "bbox": [
+          27.4,
+          954.7,
+          725.1,
+          1015.6
+        ]
+      }
+    ]
+  },
+  {
+    "image_file": "pa1091465.jpeg",
+    "detections": [
+      {
+        "label": "knife",
+        "category": "Weapons & Tools",
+        "score": 0.52,
+        "bbox": [
+          295.1,
+          700.1,
+          540.9,
+          846.0
+        ]
+      }
+    ]
+  },
+  {
+    "image_file": "pa1174012.jpeg",
+    "detections": [
+      {
+        "label": "house",
+        "category": "Buildings & Infrastructure",
+        "score": 0.635,
+        "bbox": [
+          389.2,
+          110.3,
+          824.3,
+          485.3
+        ]
+      },
+      {
+        "label": "window",
+        "category": "Buildings & Infrastructure",
+        "score": 0.296,
+        "bbox": [
+          761.5,
+          265.7,
+          793.7,
+          306.0
+        ]
+      },
+      {
+        "label": "door",
+        "category": "Buildings & Infrastructure",
+        "score": 0.282,
+        "bbox": [
+          558.1,
+          330.8,
+          652.7,
+          465.7
+        ]
+      },
+      {
+        "label": "stairs",
+        "category": "Buildings & Infrastructure",
+        "score": 0.255,
+        "bbox": [
+          560.8,
+          341.7,
+          647.7,
+          459.9
+        ]
+      }
+    ]
+  },
+  {
+    "image_file": "pa1167868.jpeg",
+    "detections": [
+      {
+        "label": "flower",
+        "category": "Nature & Outdoor Features",
+        "score": 0.275,
+        "bbox": [
+          24.6,
+          28.5,
+          429.7,
+          669.9
+        ]
+      }
+    ]
+  },
+  {
+    "image_file": "irn33651.jpeg",
+    "detections": [
+      {
+        "label": "wagon",
+        "category": "Vehicles & Transport",
+        "score": 0.813,
+        "bbox": [
+          105.7,
+          347.2,
+          557.8,
+          789.1
+        ]
+      }
+    ]
+  },
+  {
+    "image_file": "irn9835.jpeg",
+    "detections": [
+      {
+        "label": "pistol",
+        "category": "Weapons & Tools",
+        "score": 0.335,
+        "bbox": [
+          20.2,
+          206.4,
+          105.4,
+          277.7
+        ]
+      },
+      {
+        "label": "pistol",
+        "category": "Weapons & Tools",
+        "score": 0.523,
+        "bbox": [
+          191.7,
+          290.2,
+          260.0,
+          375.3
+        ]
+      },
+      {
+        "label": "baton",
+        "category": "Weapons & Tools",
+        "score": 0.297,
+        "bbox": [
+          350.8,
+          369.8,
+          386.5,
+          427.2
+        ]
+      },
+      {
+        "label": "rifle",
+        "category": "Weapons & Tools",
+        "score": 0.319,
+        "bbox": [
+          386.6,
+          497.0,
+          464.0,
+          546.5
+        ]
+      },
+      {
+        "label": "rifle",
+        "category": "Weapons & Tools",
+        "score": 0.307,
+        "bbox": [
+          32.2,
+          604.4,
+          76.3,
+          612.1
+        ]
+      },
+      {
+        "label": "rifle",
+        "category": "Weapons & Tools",
+        "score": 0.27,
+        "bbox": [
+          42.9,
+          621.1,
+          81.6,
+          630.4
+        ]
+      },
+      {
+        "label": "group of people",
+        "category": "People & Clothing",
+        "score": 0.258,
+        "bbox": [
+          51.5,
+          475.3,
+          512.3,
+          749.6
+        ]
+      }
+    ]
+  },
+  {
+    "image_file": "irn61278.jpeg",
+    "detections": []
+  },
+  {
+    "image_file": "MB01638 2.jpeg",
+    "detections": [
+      {
+        "label": "star of David",
+        "category": "Symbols & Identification",
+        "score": 0.549,
+        "bbox": [
+          285.3,
+          732.8,
+          410.2,
+          899.3
+        ]
+      }
+    ]
+  },
+  {
+    "image_file": "pa1090984.jpeg",
+    "detections": [
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.293,
+        "bbox": [
+          804.7,
+          216.8,
+          971.7,
+          344.3
+        ]
+      },
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.51,
+        "bbox": [
+          649.3,
+          356.4,
+          790.0,
+          463.2
+        ]
+      },
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.412,
+        "bbox": [
+          362.8,
+          592.5,
+          500.2,
+          674.9
+        ]
+      },
+      {
+        "label": "group of people",
+        "category": "People & Clothing",
+        "score": 0.288,
+        "bbox": [
+          78.3,
+          169.0,
+          1492.9,
+          1158.2
+        ]
+      },
+      {
+        "label": "person",
+        "category": "People & Clothing",
+        "score": 0.286,
+        "bbox": [
+          658.2,
+          167.9,
+          1344.1,
+          1137.3
+        ]
+      },
+      {
+        "label": "bed",
+        "category": "Furniture & Indoor Objects",
+        "score": 0.277,
+        "bbox": [
+          607.8,
+          499.6,
+          1529.6,
+          1159.5
+        ]
+      },
+      {
+        "label": "bed",
+        "category": "Furniture & Indoor Objects",
+        "score": 0.255,
+        "bbox": [
+          64.9,
+          581.1,
+          1528.3,
+          1163.5
+        ]
+      }
+    ]
+  },
+  {
+    "image_file": "irn162.jpeg",
+    "detections": [
+      {
+        "label": "sleeping quarters",
+        "category": "Buildings & Infrastructure",
+        "score": 0.301,
+        "bbox": [
+          196.9,
+          36.0,
+          283.8,
+          124.2
+        ]
+      },
+      {
+        "label": "sleeping quarters",
+        "category": "Buildings & Infrastructure",
+        "score": 0.391,
+        "bbox": [
+          13.7,
+          55.4,
+          143.8,
+          167.7
+        ]
+      },
+      {
+        "label": "house",
+        "category": "Buildings & Infrastructure",
+        "score": 0.252,
+        "bbox": [
+          6.9,
+          8.9,
+          621.7,
+          428.3
+        ]
+      },
+      {
+        "label": "sleeping quarters",
+        "category": "Buildings & Infrastructure",
+        "score": 0.266,
+        "bbox": [
+          355.2,
+          8.1,
+          620.7,
+          375.7
+        ]
+      },
+      {
+        "label": "sleeping quarters",
+        "category": "Buildings & Infrastructure",
+        "score": 0.283,
+        "bbox": [
+          9.6,
+          7.6,
+          354.1,
+          191.4
+        ]
+      },
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.3,
+        "bbox": [
+          159.1,
+          256.2,
+          251.7,
+          315.5
+        ]
+      },
+      {
+        "label": "book",
+        "category": "Miscellaneous",
+        "score": 0.332,
+        "bbox": [
+          218.9,
+          436.9,
+          315.5,
+          495.7
+        ]
+      }
+    ]
+  },
+  {
+    "image_file": "irn9936.jpeg",
+    "detections": [
+      {
+        "label": "house",
+        "category": "Buildings & Infrastructure",
+        "score": 0.377,
+        "bbox": [
+          359.4,
+          20.3,
+          746.0,
+          389.1
+        ]
+      }
+    ]
+  },
+  {
+    "image_file": "irn523880.jpeg",
+    "detections": [
+      {
+        "label": "tree",
+        "category": "Nature & Outdoor Features",
+        "score": 0.317,
+        "bbox": [
+          68.9,
+          26.1,
+          149.6,
+          194.9
+        ]
+      },
+      {
+        "label": "tree",
+        "category": "Nature & Outdoor Features",
+        "score": 0.276,
+        "bbox": [
+          139.7,
+          52.3,
+          166.1,
+          221.3
+        ]
+      },
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.354,
+        "bbox": [
+          527.7,
+          143.8,
+          600.1,
+          198.8
+        ]
+      },
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.253,
+        "bbox": [
+          357.0,
+          156.0,
+          402.9,
+          183.7
+        ]
+      },
+      {
+        "label": "hat",
+        "category": "People & Clothing",
+        "score": 0.314,
+        "bbox": [
+          451.1,
+          164.5,
+          494.0,
+          195.1
+        ]
+      },
+      {
+        "label": "cross",
+        "category": "Miscellaneous",
+        "score": 0.353,
+        "bbox": [
+          97.5,
+          202.9,
+          133.6,
+          266.2
+        ]
+      },
+      {
+        "label": "wagon",
+        "category": "Vehicles & Transport",
+        "score": 0.335,
+        "bbox": [
+          135.8,
+          207.9,
+          527.4,
+          475.5
+        ]
+      },
+      {
+        "label": "wagon",
+        "category": "Vehicles & Transport",
+        "score": 0.303,
+        "bbox": [
+          359.3,
+          303.7,
+          561.6,
+          479.0
+        ]
+      }
+    ]
+  },
+  {
+    "image_file": "pa1157489.jpeg",
+    "detections": [
+      {
+        "label": "coat",
+        "category": "People & Clothing",
+        "score": 0.313,
+        "bbox": [
+          982.1,
+          303.0,
+          1160.6,
+          528.6
+        ]
+      },
+      {
+        "label": "window",
+        "category": "Buildings & Infrastructure",
+        "score": 0.287,
+        "bbox": [
+          849.7,
+          513.9,
+          924.5,
+          765.8
+        ]
+      },
+      {
+        "label": "bed",
+        "category": "Furniture & Indoor Objects",
+        "score": 0.278,
+        "bbox": [
+          1068.1,
+          511.3,
+          1489.3,
+          783.1
+        ]
+      },
+      {
+        "label": "coat",
+        "category": "People & Clothing",
+        "score": 0.313,
+        "bbox": [
+          704.1,
+          576.7,
+          838.4,
+          897.3
+        ]
+      },
+      {
+        "label": "table",
+        "category": "Furniture & Indoor Objects",
+        "score": 0.282,
+        "bbox": [
+          1111.4,
+          611.9,
+          1459.3,
+          791.7
+        ]
+      },
+      {
+        "label": "chair",
+        "category": "Furniture & Indoor Objects",
+        "score": 0.291,
+        "bbox": [
+          123.4,
+          531.9,
+          276.6,
+          882.8
+        ]
+      },
+      {
+        "label": "railway track",
+        "category": "Vehicles & Transport",
+        "score": 0.427,
+        "bbox": [
+          964.9,
+          748.5,
+          1495.5,
+          1106.7
+        ]
+      },
+      {
+        "label": "railway track",
+        "category": "Vehicles & Transport",
+        "score": 0.282,
+        "bbox": [
+          995.3,
+          839.9,
+          1423.8,
+          1106.5
+        ]
+      },
+      {
+        "label": "railway track",
+        "category": "Vehicles & Transport",
+        "score": 0.3,
+        "bbox": [
+          974.9,
+          923.7,
+          1488.9,
+          1206.3
+        ]
+      }
+    ]
+  },
+  {
+    "image_file": "pa1140176.jpeg",
+    "detections": [
+      {
+        "label": "guard tower",
+        "category": "Buildings & Infrastructure",
+        "score": 0.26,
+        "bbox": [
+          1436.5,
+          146.3,
+          1687.2,
+          377.5
+        ]
+      },
+      {
+        "label": "guard tower",
+        "category": "Buildings & Infrastructure",
+        "score": 0.3,
+        "bbox": [
+          600.6,
+          99.1,
+          736.3,
+          527.4
+        ]
+      },
+      {
+        "label": "chimney",
+        "category": "Buildings & Infrastructure",
+        "score": 0.357,
+        "bbox": [
+          983.3,
+          344.7,
+          1034.0,
+          471.8
+        ]
+      },
+      {
+        "label": "bridge",
+        "category": "Buildings & Infrastructure",
+        "score": 0.331,
+        "bbox": [
+          194.7,
+          600.4,
+          1008.1,
+          841.4
+        ]
+      },
+      {
+        "label": "railway track",
+        "category": "Vehicles & Transport",
+        "score": 0.264,
+        "bbox": [
+          494.5,
+          637.2,
+          956.8,
+          799.2
+        ]
+      },
+      {
+        "label": "bridge",
+        "category": "Buildings & Infrastructure",
+        "score": 0.409,
+        "bbox": [
+          176.3,
+          596.5,
+          1009.4,
+          1131.0
+        ]
+      },
+      {
+        "label": "person",
+        "category": "People & Clothing",
+        "score": 0.254,
+        "bbox": [
+          332.0,
+          575.2,
+          490.2,
+          883.0
+        ]
+      },
+      {
+        "label": "tree",
+        "category": "Nature & Outdoor Features",
+        "score": 0.504,
+        "bbox": [
+          927.7,
+          300.8,
+          1386.0,
+          1061.7
+        ]
+      }
+    ]
+  },
+  {
+    "image_file": "pa1111641.jpeg",
+    "detections": []
+  },
+  {
+    "image_file": "irn512870.jpeg",
+    "detections": [
+      {
+        "label": "airplane",
+        "category": "Vehicles & Transport",
+        "bbox": [
+          423.8,
+          101.7,
+          537.4,
+          198.1
+        ]
+      },
+      {
+        "label": "airplane",
+        "category": "Vehicles & Transport",
+        "bbox": [
+          259.5,
+          110.6,
+          361.8,
+          195.9
+        ]
+      },
+      {
+        "label": "airplane",
+        "category": "Vehicles & Transport",
+        "bbox": [
+          562.9,
+          117.9,
+          643.9,
+          179.4
+        ]
+      },
+      {
+        "label": "ship",
+        "category": "Vehicles & Transport",
+        "bbox": [
+          121,
+          279.5,
+          610,
+          469.5
+        ]
+      }
+    ]
+  },
+  {
+    "image_file": "irn606763.jpeg",
+    "detections": [
+      {
+        "label": "chimney",
+        "category": "Buildings & Infrastructure",
+        "score": 0.516,
+        "bbox": [
+          370.7,
+          81.1,
+          394.5,
+          122.8
+        ]
+      },
+      {
+        "label": "window",
+        "category": "Buildings & Infrastructure",
+        "score": 0.324,
+        "bbox": [
+          315.4,
+          169.5,
+          363.7,
+          231.7
+        ]
+      },
+      {
+        "label": "window",
+        "category": "Buildings & Infrastructure",
+        "score": 0.263,
+        "bbox": [
+          437.0,
+          166.8,
+          484.2,
+          223.3
+        ]
+      },
+      {
+        "label": "chimney",
+        "category": "Buildings & Infrastructure",
+        "score": 0.275,
+        "bbox": [
+          586.3,
+          216.3,
+          594.9,
+          235.9
+        ]
+      },
+      {
+        "label": "building",
+        "category": "Buildings & Infrastructure",
+        "score": 0.253,
+        "bbox": [
+          638.0,
+          18.1,
+          719.4,
+          522.7
+        ]
+      },
+      {
+        "label": "window",
+        "category": "Buildings & Infrastructure",
+        "score": 0.306,
+        "bbox": [
+          318.0,
+          253.3,
+          368.8,
+          307.2
+        ]
+      },
+      {
+        "label": "window",
+        "category": "Buildings & Infrastructure",
+        "score": 0.37,
+        "bbox": [
+          442.6,
+          251.1,
+          490.4,
+          307.2
+        ]
+      },
+      {
+        "label": "house",
+        "category": "Buildings & Infrastructure",
+        "score": 0.261,
+        "bbox": [
+          107.3,
+          246.4,
+          198.9,
+          423.4
+        ]
+      },
+      {
+        "label": "chimney",
+        "category": "Buildings & Infrastructure",
+        "score": 0.569,
+        "bbox": [
+          182.5,
+          289.9,
+          189.1,
+          303.5
+        ]
+      },
+      {
+        "label": "building",
+        "category": "Buildings & Infrastructure",
+        "score": 0.32,
+        "bbox": [
+          552.0,
+          201.7,
+          626.4,
+          418.7
+        ]
+      },
+      {
+        "label": "house",
+        "category": "Buildings & Infrastructure",
+        "score": 0.524,
+        "bbox": [
+          227.8,
+          79.3,
+          563.2,
+          439.0
+        ]
+      },
+      {
+        "label": "house",
+        "category": "Buildings & Infrastructure",
+        "score": 0.313,
+        "bbox": [
+          179.0,
+          294.9,
+          237.9,
+          404.7
+        ]
+      },
+      {
+        "label": "house",
+        "category": "Buildings & Infrastructure",
+        "score": 0.389,
+        "bbox": [
+          77.7,
+          198.9,
+          207.3,
+          433.4
+        ]
+      },
+      {
+        "label": "person",
+        "category": "People & Clothing",
+        "score": 0.255,
+        "bbox": [
+          611.1,
+          355.0,
+          621.1,
+          388.1
+        ]
+      },
+      {
+        "label": "door",
+        "category": "Buildings & Infrastructure",
+        "score": 0.432,
+        "bbox": [
+          324.6,
+          356.6,
+          371.2,
+          433.2
+        ]
+      },
+      {
+        "label": "wagon",
+        "category": "Vehicles & Transport",
+        "score": 0.486,
+        "bbox": [
+          190.1,
+          380.8,
+          214.8,
+          408.6
+        ]
+      },
+      {
+        "label": "road",
+        "category": "Nature & Outdoor Features",
+        "score": 0.259,
+        "bbox": [
+          377.5,
+          373.0,
+          664.3,
+          524.9
+        ]
+      }
+    ]
+  },
+  {
+    "image_file": "irn517347.jpeg",
+    "detections": [
+      {
+        "label": "tree",
+        "category": "Nature & Outdoor Features",
+        "score": 0.485,
+        "bbox": [
+          546.3,
+          37.4,
+          778.6,
+          407.8
+        ]
+      },
+      {
+        "label": "tree",
+        "category": "Nature & Outdoor Features",
+        "score": 0.262,
+        "bbox": [
+          19.8,
+          38.5,
+          258.4,
+          346.9
+        ]
+      },
+      {
+        "label": "house",
+        "category": "Buildings & Infrastructure",
+        "score": 0.487,
+        "bbox": [
+          253.6,
+          85.3,
+          471.5,
+          371.2
+        ]
+      }
+    ]
+  }
+]

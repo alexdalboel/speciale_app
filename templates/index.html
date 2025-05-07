@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="main-layout">
+  <aside class="objects-panel">
+    <div class="objects-title">Objects</div>
+    {% for det in detections %}
+      <button class="object-btn" data-idx="{{ loop.index0 }}">{{ det.label }}</button>
+    {% endfor %}
+  </aside>
+  <section class="canvas-section">
+    <div class="canvas">
+      <div class="image-container">
+        <img id="main-image"
+             src="{{ url_for('static', filename='artworks_50/' ~ image_file) }}"
+             alt="Artwork"
+             draggable="false">
+        {% for det in detections %}
+          {% set bbox = det.bbox %}
+          <div class="bbox"
+               data-idx="{{ loop.index0 }}"
+               data-x="{{ bbox[0] }}"
+               data-y="{{ bbox[1] }}"
+               data-w="{{ bbox[2] - bbox[0] }}"
+               data-h="{{ bbox[3] - bbox[1] }}"
+               title="{{ det.label }}"></div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="pagination">
+      {% if page > 1 %}
+        <a class="page-link" href="{{ url_for('index', page=page-1, class=filter_class) }}">&lt; Previous</a>
+      {% else %}
+        <span class="page-link disabled">&lt; Previous</span>
+      {% endif %}
+      {% for p in range(1, total_pages+1) %}
+        {% if p == page %}
+          <span class="page-link active">{{ p }}</span>
+        {% elif p == 1 or p == total_pages or (p >= page-1 and p <= page+1) %}
+          <a class="page-link" href="{{ url_for('index', page=p, class=filter_class) }}">{{ p }}</a>
+        {% elif p == page-2 or p == page+2 %}
+          <span class="page-link">...</span>
+        {% endif %}
+      {% endfor %}
+      {% if page < total_pages %}
+        <a class="page-link" href="{{ url_for('index', page=page+1, class=filter_class) }}">Next &gt;</a>
+      {% else %}
+        <span class="page-link disabled">Next &gt;</span>
+      {% endif %}
+    </div>
+  </section>
+  <aside class="tools-panel">
+    <div class="tools-desc">Create new bbox</div>
+    <div class="tool-icons">
+      <div class="icon hand"></div>
+    </div>
+    <div class="class-filter">
+      <div class="filter-label">Class Filter</div>
+      <select id="class-filter-select">
+        <option value="all">All Classes</option>
+        {% for label in unique_labels %}
+          <option value="{{ label }}">{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="bbox-visibility-toggle" style="margin-top:1.5em; width:100%; text-align:center;">
+      <label style="font-size:1rem; cursor:pointer;">
+        <input type="checkbox" id="toggle-bbox-visibility" checked style="margin-right:0.5em; vertical-align:middle;"> Show Bounding Boxes
+      </label>
+    </div>
+  </aside>
+</div>
+
+<!-- Modal for bbox actions -->
+<div id="bbox-modal" class="bbox-modal" style="display:none;">
+  <div class="bbox-modal-content">
+    <span id="bbox-modal-close" class="bbox-modal-close">&times;</span>
+    <h3>BBox Actions</h3>
+    <div>
+      <label>Label: <input type="text" id="bbox-label-input"></label>
+    </div>
+    <div style="margin-top:1em;">
+      <button id="bbox-resize-btn">Resize</button>
+      <button id="bbox-apply-btn" style="display:none;">Apply</button>
+      <button id="bbox-delete-btn" style="color:red;">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Popup for bbox actions -->
+<div id="bbox-popup" class="bbox-popup" style="display:none;">
+  <ul>
+    <li id="popup-rename">Rename</li>
+    <li id="popup-resize">Resize</li>
+    <li id="popup-delete" style="color:red;">Delete</li>
+  </ul>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/bbox.js') }}"></script>
+{% endblock %}
