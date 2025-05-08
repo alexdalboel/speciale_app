@@ -7,7 +7,7 @@
   <aside class="objects-panel">
     <div class="objects-title">Objects</div>
     {% for det in detections %}
-      <button class="object-btn" data-idx="{{ loop.index0 }}">{{ det.label }}</button>
+      <button class="object-btn" data-idx="{{ loop.index0 }}" data-category="{{ det.category|default('Miscellaneous') }}">{{ det.label }}</button>
     {% endfor %}
   </aside>
   <section class="canvas-section">

@@ -1,7 +1,38 @@
 [
   {
     "image_file": "M000573-t.jpeg",
-    "detections": []
+    "detections": [
+      {
+        "label": "person",
+        "category": "People & Clothing",
+        "bbox": [
+          776.8099414601046,
+          301.466398017351,
+          905.3393532248105,
+          499.6059329010719
+        ]
+      },
+      {
+        "label": "group of people",
+        "category": "People & Clothing",
+        "bbox": [
+          908.1334708718692,
+          625.1873282499091,
+          1316.0746473424574,
+          840.0710491801417
+        ]
+      },
+      {
+        "label": "house",
+        "category": "Buildings & Infrastructure",
+        "bbox": [
+          1025.4864120483398,
+          421.466398017351,
+          1338.4275885189281,
+          555.4198863894441
+        ]
+      }
+    ]
   },
   {
     "image_file": "irn523904.jpeg",
@@ -194,7 +225,6 @@
       {
         "label": "shovel",
         "category": "Weapons & Tools",
-        "score": 0.545,
         "bbox": [
           165.5,
           239.3,
@@ -205,7 +235,6 @@
       {
         "label": "person",
         "category": "People & Clothing",
-        "score": 0.331,
         "bbox": [
           176.5,
           152.5,
@@ -216,7 +245,6 @@
       {
         "label": "hat",
         "category": "People & Clothing",
-        "score": 0.274,
         "bbox": [
           393.1,
           477.3,
@@ -227,7 +255,6 @@
       {
         "label": "person",
         "category": "People & Clothing",
-        "score": 0.328,
         "bbox": [
           358.1,
           476.6,
@@ -238,11 +265,10 @@
       {
         "label": "person",
         "category": "People & Clothing",
-        "score": 0.257,
         "bbox": [
           394.8,
           506.1,
-          448.0,
+          448,
           539.1
         ]
       }
@@ -2803,7 +2829,18 @@
   },
   {
     "image_file": "pa1111641.jpeg",
-    "detections": []
+    "detections": [
+      {
+        "label": "person",
+        "category": "People & Clothing",
+        "bbox": [
+          360.7689299583435,
+          276.033601982649,
+          821.698887348175,
+          1059.748088038245
+        ]
+      }
+    ]
   },
   {
     "image_file": "irn512870.jpeg",
@@ -2839,13 +2876,33 @@
         ]
       },
       {
+        "label": "flag",
+        "category": "Miscellaneous",
+        "bbox": [
+          344.51074849401806,
+          264.41172255771386,
+          421.93577965466034,
+          306.5633909095844
+        ]
+      },
+      {
+        "label": "flag",
+        "category": "Miscellaneous",
+        "bbox": [
+          555.6699243866788,
+          294.85459414517595,
+          627.8159761500044,
+          331.7373039530627
+        ]
+      },
+      {
         "label": "ship",
         "category": "Vehicles & Transport",
         "bbox": [
-          121,
-          279.5,
-          610,
-          469.5
+          109.71668415278693,
+          277.2498120269112,
+          640.3518724608251,
+          475.8602771431902
         ]
       }
     ]
