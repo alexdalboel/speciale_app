@@ -486,10 +486,11 @@ window.addEventListener('DOMContentLoaded', function () {
           const scaleX = displayedWidth / naturalWidth;
           const scaleY = displayedHeight / naturalHeight;
   
-          resizeState.x = ((newL - offsetX) / scaleX);
-          resizeState.y = ((newT - offsetY) / scaleY);
-          resizeState.w = newW / scaleX;
-          resizeState.h = newH / scaleY;
+          // Convert screen coordinates back to image coordinates, accounting for zoom
+          resizeState.x = ((newL - offsetX - panOffset.x) / (scaleX * zoomLevel));
+          resizeState.y = ((newT - offsetY - panOffset.y) / (scaleY * zoomLevel));
+          resizeState.w = newW / (scaleX * zoomLevel);
+          resizeState.h = newH / (scaleY * zoomLevel);
         }
   
         function onMouseUp(ev) {
@@ -1040,7 +1041,7 @@ window.addEventListener('DOMContentLoaded', function () {
 
     // Update the panning event handlers
     imageContainer.addEventListener('mousedown', function(e) {
-      if (isCreatingBox) return; // Don't pan if creating box
+      if (isCreatingBox || resizing) return; // Don't pan if creating box or resizing
       
       isPanning = true;
       lastPanPosition = { x: e.clientX, y: e.clientY };
