@@ -52,19 +52,49 @@ $nav-link-font-size: 16px;
     font-weight: 500;
     padding: 0.5rem 0;
 
-    &.obj-purple {
+    &[data-category="Animals"] {
+      background: #fff7c0;
+      color: #a18c2a;
+    }
+
+    &[data-category="Buildings & Infrastructure"] {
+      background: #d1f0ff;
+      color: #2b5b6b;
+    }
+
+    &[data-category="Furniture & Indoor Objects"] {
       background: #e1d5fa;
       color: #4b3b6b;
     }
 
-    &.obj-pink {
+    &[data-category="Miscellaneous"] {
+      background: #f0f0f0;
+      color: #666666;
+    }
+
+    &[data-category="Nature & Outdoor Features"] {
+      background: #d1ffd1;
+      color: #2b6b2b;
+    }
+
+    &[data-category="People & Clothing"] {
       background: #ffd1d1;
       color: #a14a4a;
     }
 
-    &.obj-yellow {
-      background: #fff7c0;
-      color: #a18c2a;
+    &[data-category="Symbols & Identification"] {
+      background: #ffe0b2;
+      color: #b75e00;
+    }
+
+    &[data-category="Vehicles & Transport"] {
+      background: #b3e5fc;
+      color: #01579b;
+    }
+
+    &[data-category="Weapons & Tools"] {
+      background: #ffcdd2;
+      color: #b71c1c;
     }
 
     &:hover {
