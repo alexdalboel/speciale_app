@@ -63,6 +63,44 @@ window.addEventListener('DOMContentLoaded', function () {
         max-height: 100%;
         margin: auto;
       }
+
+      /* Add category-specific styles directly in JavaScript */
+      .object-btn[data-category="Animals"] {
+        background: #fff7c0 !important;
+        color: #a18c2a !important;
+      }
+      .object-btn[data-category="Buildings & Infrastructure"] {
+        background: #d1f0ff !important;
+        color: #2b5b6b !important;
+      }
+      .object-btn[data-category="Furniture & Indoor Objects"] {
+        background: #e1d5fa !important;
+        color: #4b3b6b !important;
+      }
+      .object-btn[data-category="Miscellaneous"] {
+        background: #f0f0f0 !important;
+        color: #666666 !important;
+      }
+      .object-btn[data-category="Nature & Outdoor Features"] {
+        background: #d1ffd1 !important;
+        color: #2b6b2b !important;
+      }
+      .object-btn[data-category="People & Clothing"] {
+        background: #ffd1d1 !important;
+        color: #a14a4a !important;
+      }
+      .object-btn[data-category="Symbols & Identification"] {
+        background: #ffe0b2 !important;
+        color: #b75e00 !important;
+      }
+      .object-btn[data-category="Vehicles & Transport"] {
+        background: #b3e5fc !important;
+        color: #01579b !important;
+      }
+      .object-btn[data-category="Weapons & Tools"] {
+        background: #ffcdd2 !important;
+        color: #b71c1c !important;
+      }
     `;
     document.head.appendChild(style);
   
@@ -73,10 +111,17 @@ window.addEventListener('DOMContentLoaded', function () {
     const imageContainer = img.parentElement;
     if (!img) return;
   
+    // Debug: Log initial state of buttons
+    console.log('Initial buttons:', document.querySelectorAll('.object-btn'));
+    document.querySelectorAll('.object-btn').forEach(btn => {
+      console.log('Button:', btn.textContent, 'Category:', btn.dataset.category);
+    });
+  
     // Load all detections data from the JSON file
     fetch('/get_all_detections')
       .then(response => response.json())
       .then(data => {
+        console.log('Loaded detections data:', data); // Debug log
         // Store all detections from all pages with their image files
         window.allDetectionsData = data.reduce((acc, item) => {
           const detectionsWithImage = item.detections.map(detection => ({
@@ -94,6 +139,8 @@ window.addEventListener('DOMContentLoaded', function () {
           }
         });
 
+        console.log('All categories:', Array.from(window.allCategories)); // Debug log
+
         // Initialize bboxes with their categories from the data attributes
         bboxes.forEach(box => {
           const label = box.title;
@@ -101,11 +148,31 @@ window.addEventListener('DOMContentLoaded', function () {
           const matchingDetection = window.allDetectionsData.find(d => 
             d.label === label && d._image_file === img.src.split('/').pop()
           );
+          console.log('Matching detection for', label, ':', matchingDetection); // Debug log
+          
           if (matchingDetection && matchingDetection.category) {
             box.dataset.category = matchingDetection.category;
+            // Also update the corresponding button
+            const btn = document.querySelector(`.object-btn[data-idx="${box.dataset.idx}"]`);
+            if (btn) {
+              btn.dataset.category = matchingDetection.category;
+              console.log('Updated button category:', btn.textContent, '->', matchingDetection.category); // Debug log
+            }
           } else {
             box.dataset.category = "Miscellaneous";
+            // Also update the corresponding button
+            const btn = document.querySelector(`.object-btn[data-idx="${box.dataset.idx}"]`);
+            if (btn) {
+              btn.dataset.category = "Miscellaneous";
+              console.log('Set button to Miscellaneous:', btn.textContent); // Debug log
+            }
           }
+        });
+
+        // Debug: Log final state of buttons
+        console.log('Final buttons:', document.querySelectorAll('.object-btn'));
+        document.querySelectorAll('.object-btn').forEach(btn => {
+          console.log('Button:', btn.textContent, 'Category:', btn.dataset.category);
         });
       })
       .catch(error => {
@@ -117,8 +184,18 @@ window.addEventListener('DOMContentLoaded', function () {
       const category = box.getAttribute('data-category');
       if (category) {
         box.dataset.category = category;
+        // Also update the corresponding button
+        const btn = document.querySelector(`.object-btn[data-idx="${box.dataset.idx}"]`);
+        if (btn) {
+          btn.dataset.category = category;
+        }
       } else {
         box.dataset.category = "Miscellaneous";
+        // Also update the corresponding button
+        const btn = document.querySelector(`.object-btn[data-idx="${box.dataset.idx}"]`);
+        if (btn) {
+          btn.dataset.category = "Miscellaneous";
+        }
       }
     });
   
@@ -128,17 +205,27 @@ window.addEventListener('DOMContentLoaded', function () {
     let horizontalGuideline = null;
     let verticalGuideline = null;
   
+    // Add panning state variables
+    let isPanning = false;
+    let panOffset = { x: 0, y: 0 };
+    let lastPanPosition = { x: 0, y: 0 };
+    
+    // Add zoom state variables
+    let zoomLevel = 1;
+    const ZOOM_SPEED = 0.1;
+    const MIN_ZOOM = 0.1;
+    const MAX_ZOOM = 5;
+  
     function updateBoxes() {
       // Get the actual displayed size and position of the image
       const imgRect = img.getBoundingClientRect();
       const containerRect = imageContainer.getBoundingClientRect();
       const naturalWidth = img.naturalWidth;
       const naturalHeight = img.naturalHeight;
-      const displayedWidth = imgRect.width;
-      const displayedHeight = imgRect.height;
-      // Offset of the image inside the container
-      const offsetX = imgRect.left - containerRect.left;
-      const offsetY = imgRect.top - containerRect.top;
+      const displayedWidth = img.width;
+      const displayedHeight = img.height;
+      const offsetX = (containerRect.width - displayedWidth) / 2;
+      const offsetY = (containerRect.height - displayedHeight) / 2;
       const scaleX = displayedWidth / naturalWidth;
       const scaleY = displayedHeight / naturalHeight;
 
@@ -148,17 +235,20 @@ window.addEventListener('DOMContentLoaded', function () {
         const w = parseFloat(box.dataset.w);
         const h = parseFloat(box.dataset.h);
 
-        // Calculate positions relative to the container
-        const left = offsetX + x * scaleX;
-        const top = offsetY + y * scaleY;
-        const width = w * scaleX;
-        const height = h * scaleY;
+        // Calculate positions relative to the container, matching image transformation
+        const left = offsetX + (x * scaleX * zoomLevel) + panOffset.x;
+        const top = offsetY + (y * scaleY * zoomLevel) + panOffset.y;
+        const width = w * scaleX * zoomLevel;
+        const height = h * scaleY * zoomLevel;
 
         // Set the position and size
         box.style.left = `${left}px`;
         box.style.top = `${top}px`;
         box.style.width = `${width}px`;
         box.style.height = `${height}px`;
+        // Remove transform properties
+        box.style.transform = '';
+        box.style.transformOrigin = '';
       });
     }
   
@@ -687,7 +777,7 @@ window.addEventListener('DOMContentLoaded', function () {
       resizeState = null;
     }
 
-    // Function to convert screen coordinates to image coordinates
+    // Update the screenToImageCoords function to properly handle pan and zoom
     function screenToImageCoords(screenX, screenY) {
       const container = imageContainer;
       const rect = container.getBoundingClientRect();
@@ -700,13 +790,14 @@ window.addEventListener('DOMContentLoaded', function () {
       const scaleX = displayedWidth / naturalWidth;
       const scaleY = displayedHeight / naturalHeight;
 
+      // First remove pan offset, then divide by zoom and scale
       return {
-        x: (screenX - rect.left - offsetX) / scaleX,
-        y: (screenY - rect.top - offsetY) / scaleY
+        x: (screenX - rect.left - offsetX - panOffset.x) / (scaleX * zoomLevel),
+        y: (screenY - rect.top - offsetY - panOffset.y) / (scaleY * zoomLevel)
       };
     }
 
-    // Function to convert image coordinates to screen coordinates
+    // Update the imageToScreenCoords function to properly handle pan and zoom
     function imageToScreenCoords(imageX, imageY) {
       const container = imageContainer;
       const naturalWidth = img.naturalWidth;
@@ -718,9 +809,10 @@ window.addEventListener('DOMContentLoaded', function () {
       const scaleX = displayedWidth / naturalWidth;
       const scaleY = displayedHeight / naturalHeight;
 
+      // First multiply by scale and zoom, then add pan offset
       return {
-        x: offsetX + (imageX * scaleX),
-        y: offsetY + (imageY * scaleY)
+        x: offsetX + (imageX * scaleX * zoomLevel) + panOffset.x,
+        y: offsetY + (imageY * scaleY * zoomLevel) + panOffset.y
       };
     }
 
@@ -866,6 +958,7 @@ window.addEventListener('DOMContentLoaded', function () {
         btn.className = 'object-btn';
         btn.textContent = label;
         btn.dataset.idx = nextIndex.toString();
+        btn.dataset.category = category; // Set the category on the button
         objectsPanel.appendChild(btn);
 
         // Add event listeners to the new button
@@ -945,6 +1038,74 @@ window.addEventListener('DOMContentLoaded', function () {
       verticalGuideline.style.left = x + 'px';
     }
 
+    // Update the panning event handlers
+    imageContainer.addEventListener('mousedown', function(e) {
+      if (isCreatingBox) return; // Don't pan if creating box
+      
+      isPanning = true;
+      lastPanPosition = { x: e.clientX, y: e.clientY };
+      imageContainer.style.cursor = 'grabbing';
+    });
+
+    document.addEventListener('mousemove', function(e) {
+      if (!isPanning) return;
+      
+      const dx = e.clientX - lastPanPosition.x;
+      const dy = e.clientY - lastPanPosition.y;
+      
+      // Update pan offset directly
+      panOffset.x += dx;
+      panOffset.y += dy;
+      
+      lastPanPosition = { x: e.clientX, y: e.clientY };
+      
+      // Update image transform
+      img.style.transform = `translate(${panOffset.x}px, ${panOffset.y}px) scale(${zoomLevel})`;
+      
+      // Update all boxes positions
+      updateBoxes();
+    });
+
+    document.addEventListener('mouseup', function() {
+      if (isPanning) {
+        isPanning = false;
+        imageContainer.style.cursor = isCreatingBox ? 'crosshair' : 'grab';
+      }
+    });
+
+    // Update the wheel event handler to properly handle zoom around mouse position
+    imageContainer.addEventListener('wheel', function(e) {
+      e.preventDefault();
+      
+      // Calculate zoom factor based on wheel direction
+      const delta = e.deltaY > 0 ? -ZOOM_SPEED : ZOOM_SPEED;
+      const newZoom = Math.min(Math.max(zoomLevel + delta, MIN_ZOOM), MAX_ZOOM);
+      
+      // Calculate mouse position relative to container
+      const rect = imageContainer.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+      
+      // Calculate mouse position in image coordinates before zoom
+      const imageCoords = screenToImageCoords(e.clientX, e.clientY);
+      
+      // Update zoom level
+      zoomLevel = newZoom;
+      
+      // Calculate new screen position for the same image coordinates
+      const newScreenCoords = imageToScreenCoords(imageCoords.x, imageCoords.y);
+      
+      // Update pan offset to keep mouse position fixed
+      panOffset.x += mouseX - newScreenCoords.x;
+      panOffset.y += mouseY - newScreenCoords.y;
+      
+      // Update image transform
+      img.style.transform = `translate(${panOffset.x}px, ${panOffset.y}px) scale(${zoomLevel})`;
+      
+      // Update all boxes positions
+      updateBoxes();
+    });
+
     // Modify the hand button click handler
     handButton.addEventListener('click', function() {
       isCreatingBox = !isCreatingBox;
@@ -956,81 +1117,11 @@ window.addEventListener('DOMContentLoaded', function () {
           creatingBox = null;
         }
         removeGuidelines();
-        imageContainer.style.cursor = 'default';
+        imageContainer.style.cursor = 'grab';
       } else {
         createGuidelines();
         imageContainer.style.cursor = 'crosshair';
       }
-    });
-
-    // Modify the mousemove handler for guidelines
-    imageContainer.addEventListener('mousemove', function(e) {
-      if (!isCreatingBox || !horizontalGuideline || !verticalGuideline) return;
-      
-      const rect = imageContainer.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      
-      updateGuidelines(x, y);
-    });
-
-    // Modify the mousedown handler for creating boxes
-    imageContainer.addEventListener('mousedown', function(e) {
-      if (!isCreatingBox) return;
-      
-      const coords = screenToImageCoords(e.clientX, e.clientY);
-      startX = coords.x;
-      startY = coords.y;
-
-      creatingBox = document.createElement('div');
-      creatingBox.className = 'creating-box';
-      
-      // Calculate initial position using screen coordinates
-      const screenCoords = imageToScreenCoords(startX, startY);
-      creatingBox.style.left = screenCoords.x + 'px';
-      creatingBox.style.top = screenCoords.y + 'px';
-      imageContainer.appendChild(creatingBox);
-
-      function onMouseMove(ev) {
-        if (!creatingBox) return;
-        const currentCoords = screenToImageCoords(ev.clientX, ev.clientY);
-        const width = Math.abs(currentCoords.x - startX);
-        const height = Math.abs(currentCoords.y - startY);
-        const left = Math.min(startX, currentCoords.x);
-        const top = Math.min(startY, currentCoords.y);
-
-        const screenCoords = imageToScreenCoords(left, top);
-        creatingBox.style.left = screenCoords.x + 'px';
-        creatingBox.style.top = screenCoords.y + 'px';
-        creatingBox.style.width = (width * img.width / img.naturalWidth) + 'px';
-        creatingBox.style.height = (height * img.height / img.naturalHeight) + 'px';
-      }
-
-      function onMouseUp(ev) {
-        if (!creatingBox) return;
-        const currentCoords = screenToImageCoords(ev.clientX, ev.clientY);
-        const width = Math.abs(currentCoords.x - startX);
-        const height = Math.abs(currentCoords.y - startY);
-        const left = Math.min(startX, currentCoords.x);
-        const top = Math.min(startY, currentCoords.y);
-
-        if (width > 10 && height > 10) {
-          const label = prompt('Enter label for the new box:');
-          if (label && label.trim() !== '') {
-            createNewBox(left, top, width, height, label);
-            // Force an immediate update of all boxes
-            updateBoxes();
-          }
-        }
-
-        creatingBox.remove();
-        creatingBox = null;
-        document.removeEventListener('mousemove', onMouseMove);
-        document.removeEventListener('mouseup', onMouseUp);
-      }
-
-      document.addEventListener('mousemove', onMouseMove);
-      document.addEventListener('mouseup', onMouseUp);
     });
 
     // Add class filter functionality
@@ -1075,5 +1166,82 @@ window.addEventListener('DOMContentLoaded', function () {
         });
       });
     }
+
+    // Add initial cursor style and transform origin
+    imageContainer.style.cursor = 'grab';
+    img.style.transformOrigin = '0 0';
+    document.querySelectorAll('.bbox').forEach(box => {
+      box.style.transformOrigin = '0 0';
+    });
+
+    // Update the mousemove handler for guidelines to use proper coordinate conversion
+    imageContainer.addEventListener('mousemove', function(e) {
+      if (!isCreatingBox || !horizontalGuideline || !verticalGuideline) return;
+      
+      const rect = imageContainer.getBoundingClientRect();
+      const coords = screenToImageCoords(e.clientX, e.clientY);
+      const screenCoords = imageToScreenCoords(coords.x, coords.y);
+      
+      updateGuidelines(screenCoords.x, screenCoords.y);
+    });
+
+    // Update the mousedown handler for creating boxes
+    imageContainer.addEventListener('mousedown', function(e) {
+      if (!isCreatingBox) return;
+      
+      const coords = screenToImageCoords(e.clientX, e.clientY);
+      startX = coords.x;
+      startY = coords.y;
+
+      creatingBox = document.createElement('div');
+      creatingBox.className = 'creating-box';
+      
+      // Calculate initial position using screen coordinates
+      const screenCoords = imageToScreenCoords(startX, startY);
+      creatingBox.style.left = screenCoords.x + 'px';
+      creatingBox.style.top = screenCoords.y + 'px';
+      imageContainer.appendChild(creatingBox);
+
+      function onMouseMove(ev) {
+        if (!creatingBox) return;
+        const currentCoords = screenToImageCoords(ev.clientX, ev.clientY);
+        const width = Math.abs(currentCoords.x - startX);
+        const height = Math.abs(currentCoords.y - startY);
+        const left = Math.min(startX, currentCoords.x);
+        const top = Math.min(startY, currentCoords.y);
+
+        const screenCoords = imageToScreenCoords(left, top);
+        creatingBox.style.left = screenCoords.x + 'px';
+        creatingBox.style.top = screenCoords.y + 'px';
+        creatingBox.style.width = (width * img.width / img.naturalWidth * zoomLevel) + 'px';
+        creatingBox.style.height = (height * img.height / img.naturalHeight * zoomLevel) + 'px';
+      }
+
+      function onMouseUp(ev) {
+        if (!creatingBox) return;
+        const currentCoords = screenToImageCoords(ev.clientX, ev.clientY);
+        const width = Math.abs(currentCoords.x - startX);
+        const height = Math.abs(currentCoords.y - startY);
+        const left = Math.min(startX, currentCoords.x);
+        const top = Math.min(startY, currentCoords.y);
+
+        if (width > 10 && height > 10) {
+          const label = prompt('Enter label for the new box:');
+          if (label && label.trim() !== '') {
+            createNewBox(left, top, width, height, label);
+            // Force an immediate update of all boxes
+            updateBoxes();
+          }
+        }
+
+        creatingBox.remove();
+        creatingBox = null;
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseup', onMouseUp);
+      }
+
+      document.addEventListener('mousemove', onMouseMove);
+      document.addEventListener('mouseup', onMouseUp);
+    });
   });
   
