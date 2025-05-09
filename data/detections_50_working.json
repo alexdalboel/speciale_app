@@ -31,16 +31,6 @@
           1338.4275885189281,
           555.4198863894441
         ]
-      },
-      {
-        "label": "bob",
-        "category": "Animals",
-        "bbox": [
-          1216.05511240029,
-          251.9008289683949,
-          1497.1283538796229,
-          445.289258720461
-        ]
       }
     ]
   },
@@ -50,36 +40,40 @@
       {
         "label": "sun",
         "category": "Nature & Outdoor Features",
+        "score": 0.509,
         "bbox": [
           644.8,
           24.1,
           755.5,
-          126.69999999999999
+          126.7
         ]
       },
       {
-        "label": "helmet",
+        "label": "hat",
         "category": "People & Clothing",
+        "score": 0.395,
         "bbox": [
           199.6,
-          152,
+          152.0,
           225.2,
           168.7
         ]
       },
       {
-        "label": "helmet",
+        "label": "hat",
         "category": "People & Clothing",
+        "score": 0.266,
         "bbox": [
           525.9,
-          151,
+          151.0,
           547.5,
           169.6
         ]
       },
       {
-        "label": "helmet",
+        "label": "hat",
         "category": "People & Clothing",
+        "score": 0.344,
         "bbox": [
           228.7,
           167.9,
@@ -88,18 +82,20 @@
         ]
       },
       {
-        "label": "helmet",
+        "label": "hat",
         "category": "People & Clothing",
+        "score": 0.287,
         "bbox": [
           261.3,
           173.2,
-          280,
+          280.0,
           184.8
         ]
       },
       {
-        "label": "helmet",
+        "label": "hat",
         "category": "People & Clothing",
+        "score": 0.267,
         "bbox": [
           282.6,
           168.9,
@@ -108,8 +104,9 @@
         ]
       },
       {
-        "label": "helmet",
+        "label": "hat",
         "category": "People & Clothing",
+        "score": 0.268,
         "bbox": [
           393.5,
           168.6,
@@ -118,8 +115,9 @@
         ]
       },
       {
-        "label": "helmet",
+        "label": "hat",
         "category": "People & Clothing",
+        "score": 0.355,
         "bbox": [
           102.9,
           238.2,
@@ -128,8 +126,9 @@
         ]
       },
       {
-        "label": "helmet",
+        "label": "hat",
         "category": "People & Clothing",
+        "score": 0.348,
         "bbox": [
           303.8,
           275.8,
@@ -138,8 +137,9 @@
         ]
       },
       {
-        "label": "helmet",
+        "label": "hat",
         "category": "People & Clothing",
+        "score": 0.422,
         "bbox": [
           280.4,
           279.4,
@@ -148,18 +148,20 @@
         ]
       },
       {
-        "label": "helmet",
+        "label": "hat",
         "category": "People & Clothing",
+        "score": 0.395,
         "bbox": [
-          240,
+          240.0,
           303.5,
           268.5,
           328.1
         ]
       },
       {
-        "label": "helmet",
+        "label": "hat",
         "category": "People & Clothing",
+        "score": 0.305,
         "bbox": [
           521.1,
           325.4,
@@ -170,6 +172,7 @@
       {
         "label": "group of people",
         "category": "People & Clothing",
+        "score": 0.346,
         "bbox": [
           107.4,
           147.4,
@@ -180,6 +183,7 @@
       {
         "label": "hat",
         "category": "People & Clothing",
+        "score": 0.288,
         "bbox": [
           399.3,
           370.8,
@@ -190,6 +194,7 @@
       {
         "label": "hat",
         "category": "People & Clothing",
+        "score": 0.298,
         "bbox": [
           364.5,
           385.5,
@@ -644,29 +649,32 @@
       {
         "label": "rope",
         "category": "Miscellaneous",
+        "score": 0.252,
         "bbox": [
           1041.5,
           103.1,
           1586.9,
-          308
+          308.0
         ]
       },
       {
         "label": "sleeping quarters",
         "category": "Buildings & Infrastructure",
+        "score": 0.272,
         "bbox": [
           501.8,
           86.4,
-          1889,
+          1889.0,
           1112.2
         ]
       },
       {
         "label": "coat",
         "category": "People & Clothing",
+        "score": 0.256,
         "bbox": [
-          626,
-          429,
+          626.0,
+          429.0,
           739.3,
           821.8
         ]
@@ -674,6 +682,7 @@
       {
         "label": "bucket",
         "category": "Miscellaneous",
+        "score": 0.28,
         "bbox": [
           1654.5,
           802.3,
@@ -684,6 +693,7 @@
       {
         "label": "table",
         "category": "Furniture & Indoor Objects",
+        "score": 0.365,
         "bbox": [
           1043.7,
           795.4,
@@ -692,10 +702,11 @@
         ]
       },
       {
-        "label": "vase",
-        "category": "Furniture & Indoor Objects",
+        "label": "bird",
+        "category": "Animals",
+        "score": 0.253,
         "bbox": [
-          1423,
+          1423.0,
           775.3,
           1614.9,
           923.9
@@ -704,6 +715,7 @@
       {
         "label": "stool",
         "category": "Furniture & Indoor Objects",
+        "score": 0.445,
         "bbox": [
           969.3,
           883.9,
