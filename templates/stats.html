@@ -1,71 +1,33 @@
 {% extends "base.html" %}
 
-{% block title %}Statistics Dashboard{% endblock %}
+{% block title %}C.H.O.R.U.S.{% endblock %}
 
 {% block content %}
-<div class="container-fluid py-4">
-    <!-- Charts Row: Category Donut, Top 10 Labels Donut, Word Cloud + Confidence Score -->
-    <div class="row mb-4">
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Category Distribution</h5>
-                    <canvas id="categoryDonutChart"></canvas>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Top 10 Labels</h5>
-                    <canvas id="labelDonutChart"></canvas>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Label Word Cloud</h5>
-                    <div id="labelWordCloud" style="width:100%;height:200px;"></div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Confidence Score Distribution</h5>
-                    <canvas id="valueChart"></canvas>
-                </div>
-            </div>
-        </div>
+<div class="container">
+  <div style="display: flex; flex-wrap: wrap; gap: 32px;">
+    <div style="flex: 2; min-width: 400px;">
+      <h3>Label Change Heatmap</h3>
+      <div id="label-change-heatmap" style="height:400px;"></div>
     </div>
-
-    <!-- Data Table (centered, col-md-4) -->
-    <div class="row justify-content-center">
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Detailed Statistics</h5>
-                    <div class="table-responsive">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Metric</th>
-                                    <th>Value</th>
-                                </tr>
-                            </thead>
-                            <tbody id="statsTable">
-                                <!-- Will be populated by JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div style="flex: 1; min-width: 300px;">
+      <h3>Correction Type Breakdown</h3>
+      <div id="correction-type-breakdown" style="height:300px;"></div>
     </div>
+  </div>
+  <div style="display: flex; flex-wrap: wrap; gap: 32px; margin-top: 32px;">
+    <div style="flex: 1; min-width: 400px;">
+      <h3>Most Frequently Added/Removed Labels</h3>
+      <div id="added-removed-labels" style="height:350px;"></div>
+    </div>
+    <div style="flex: 1; min-width: 400px;">
+      <h3>Top Images with Most Corrections</h3>
+      <div id="top-images-corrections" style="height:350px;"></div>
+    </div>
+  </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/wordcloud@1.2.2/src/wordcloud2.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <script src="{{ url_for('static', filename='js/stats.js') }}"></script>
 {% endblock %}

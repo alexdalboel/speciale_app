@@ -112,16 +112,14 @@ window.addEventListener('DOMContentLoaded', function () {
     if (!img) return;
   
     // Debug: Log initial state of buttons
-    console.log('Initial buttons:', document.querySelectorAll('.object-btn'));
     document.querySelectorAll('.object-btn').forEach(btn => {
-      console.log('Button:', btn.textContent, 'Category:', btn.dataset.category);
+      btn.dataset.category = btn.dataset.category;
     });
   
     // Load all detections data from the JSON file
     fetch('/get_all_detections')
       .then(response => response.json())
       .then(data => {
-        console.log('Loaded detections data:', data); // Debug log
         // Store all detections from all pages with their image files
         window.allDetectionsData = data.reduce((acc, item) => {
           const detectionsWithImage = item.detections.map(detection => ({
@@ -139,8 +137,6 @@ window.addEventListener('DOMContentLoaded', function () {
           }
         });
 
-        console.log('All categories:', Array.from(window.allCategories)); // Debug log
-
         // Initialize bboxes with their categories from the data attributes
         bboxes.forEach(box => {
           const label = box.title;
@@ -148,7 +144,6 @@ window.addEventListener('DOMContentLoaded', function () {
           const matchingDetection = window.allDetectionsData.find(d => 
             d.label === label && d._image_file === img.src.split('/').pop()
           );
-          console.log('Matching detection for', label, ':', matchingDetection); // Debug log
           
           if (matchingDetection && matchingDetection.category) {
             box.dataset.category = matchingDetection.category;
@@ -156,7 +151,6 @@ window.addEventListener('DOMContentLoaded', function () {
             const btn = document.querySelector(`.object-btn[data-idx="${box.dataset.idx}"]`);
             if (btn) {
               btn.dataset.category = matchingDetection.category;
-              console.log('Updated button category:', btn.textContent, '->', matchingDetection.category); // Debug log
             }
           } else {
             box.dataset.category = "Miscellaneous";
@@ -164,15 +158,13 @@ window.addEventListener('DOMContentLoaded', function () {
             const btn = document.querySelector(`.object-btn[data-idx="${box.dataset.idx}"]`);
             if (btn) {
               btn.dataset.category = "Miscellaneous";
-              console.log('Set button to Miscellaneous:', btn.textContent); // Debug log
             }
           }
         });
 
         // Debug: Log final state of buttons
-        console.log('Final buttons:', document.querySelectorAll('.object-btn'));
         document.querySelectorAll('.object-btn').forEach(btn => {
-          console.log('Button:', btn.textContent, 'Category:', btn.dataset.category);
+          btn.dataset.category = btn.dataset.category;
         });
       })
       .catch(error => {
@@ -278,14 +270,10 @@ window.addEventListener('DOMContentLoaded', function () {
 
     // Function to get category for a label from existing boxes or JSON data
     function getCategoryForLabel(label) {
-      console.log('Getting category for label:', label);
-      console.log('Current all detections data:', window.allDetectionsData);
-
       // First check in the DOM for boxes with the same label
       const existingBoxes = document.querySelectorAll('.bbox');
       for (const box of existingBoxes) {
         if (box.title === label && box.dataset.category) {
-          console.log('Found category in DOM:', box.dataset.category);
           return box.dataset.category;
         }
       }
@@ -307,12 +295,10 @@ window.addEventListener('DOMContentLoaded', function () {
         }
         
         if (matchingDetection && matchingDetection.category) {
-          console.log('Found category in detections data:', matchingDetection.category);
           return matchingDetection.category;
         }
       }
 
-      console.log('No category found for label:', label);
       return null;
     }
 
@@ -323,6 +309,7 @@ window.addEventListener('DOMContentLoaded', function () {
         const urlParams = new URLSearchParams(window.location.search);
         const page = urlParams.get('page') || '1';
         const currentImage = img.src.split('/').pop();
+        const filterClass = urlParams.get('class');
 
         // Get all current boxes
         const detections = Array.from(document.querySelectorAll('.bbox')).map(box => ({
@@ -378,6 +365,19 @@ window.addEventListener('DOMContentLoaded', function () {
           const errorData = await response.json();
           throw new Error(errorData.error || 'Failed to update detections');
         }
+
+        // If we're filtering by class, ensure we stay on a valid page
+        if (filterClass && filterClass !== 'all') {
+          const filteredDetections = detections.filter(d => d.label === filterClass);
+          if (filteredDetections.length === 0) {
+            // If no detections left for this class, redirect to first page
+            window.location.href = `${window.location.pathname}?page=1&class=${filterClass}`;
+            return;
+          }
+        }
+
+        // Update stats after successful update
+        updateStats();
       } catch (error) {
         console.error('Error updating detections:', error);
         alert('Failed to save changes. Please try again.');
@@ -615,7 +615,6 @@ window.addEventListener('DOMContentLoaded', function () {
     };
 
     popupResize.onclick = function () {
-      console.log('Resize clicked');
       popup.style.display = 'none';
       if (!activeBox) return;
       addResizeHandles(activeBox);
@@ -706,9 +705,10 @@ window.addEventListener('DOMContentLoaded', function () {
         ]
       }));
 
-      // Get current page from URL
+      // Get current page and filter from URL
       const urlParams = new URLSearchParams(window.location.search);
       const page = urlParams.get('page') || '1';
+      const filterClass = urlParams.get('class');
 
       // Update allDetectionsData by removing the deleted box
       if (window.allDetectionsData) {
@@ -737,6 +737,18 @@ window.addEventListener('DOMContentLoaded', function () {
           image_file: img.src.split('/').pop(),
           detections: detections
         })
+      }).then(() => {
+        // If we're filtering by class and this was the last instance of that class,
+        // redirect to the first page
+        if (filterClass && filterClass !== 'all') {
+          const remainingClassDetections = detections.filter(d => d.label === filterClass);
+          if (remainingClassDetections.length === 0) {
+            window.location.href = `${window.location.pathname}?page=1&class=${filterClass}`;
+            return;
+          }
+        }
+        // Update stats after successful deletion
+        updateStats();
       }).catch(error => {
         console.error('Error updating detections:', error);
         alert('Failed to save changes. Please try again.');
@@ -744,7 +756,6 @@ window.addEventListener('DOMContentLoaded', function () {
     };
 
     function addResizeHandles(bbox) {
-      console.log('Adding resize handles');
       removeResizeHandles(bbox);
       bbox.classList.add('resizing');
       ['nw', 'ne', 'sw', 'se'].forEach(dir => {
@@ -753,7 +764,6 @@ window.addEventListener('DOMContentLoaded', function () {
         handle.dataset.dir = dir;
         bbox.appendChild(handle);
       });
-      console.log('Resize handles added:', bbox.querySelectorAll('.resize-handle').length);
     }
   
     function removeResizeHandles(bbox) {
@@ -763,7 +773,6 @@ window.addEventListener('DOMContentLoaded', function () {
     }
   
     function cancelResize() {
-      console.log('Canceling resize');
       if (activeBox && resizeState) {
         // Reset to original position
         activeBox.style.width = '';
@@ -1243,6 +1252,429 @@ window.addEventListener('DOMContentLoaded', function () {
 
       document.addEventListener('mousemove', onMouseMove);
       document.addEventListener('mouseup', onMouseUp);
+    });
+
+    // Add 'Delete All Corrections' button to the tools panel
+    const functionsPanel = document.querySelector('.tools-panel');
+    if (functionsPanel) {
+      const deleteAllBtn = document.createElement('button');
+      deleteAllBtn.textContent = 'Delete All Corrections';
+      deleteAllBtn.style.background = '#ff4d4d';
+      deleteAllBtn.style.color = 'white';
+      deleteAllBtn.style.margin = '8px 0';
+      deleteAllBtn.style.fontWeight = 'bold';
+      deleteAllBtn.onclick = function () {
+        if (confirm('Are you sure? This action deletes all changes made.')) {
+          fetch('/reset_working_copy', { method: 'POST' })
+            .then(res => {
+              if (!res.ok) throw new Error('Failed to reset working copy');
+              return res.json();
+            })
+            .then(data => {
+              if (data.success) {
+                window.location.reload();
+              } else {
+                alert('Failed to reset corrections: ' + (data.error || 'Unknown error'));
+              }
+            })
+            .catch(err => {
+              alert('Failed to reset corrections: ' + err.message);
+            });
+        }
+      };
+      functionsPanel.appendChild(deleteAllBtn);
+    }
+
+    // Add function to update stats
+    function updateStats() {
+      fetch('/get_stats_data')
+        .then(res => res.json())
+        .then(data => {
+          const { original, working } = data;
+          const correctionLog = computeCorrectionLog(original, working);
+          updateStats(correctionLog, working);
+        })
+        .catch(error => {
+          console.error('Error updating stats:', error);
+        });
+    }
+
+    // Add multi-select functionality
+    const objectsPanel = document.querySelector('.objects-panel');
+    const multiSelectBtn = document.createElement('button');
+    multiSelectBtn.textContent = 'Select Multiple';
+    multiSelectBtn.style.cssText = `
+      width: 100%;
+      padding: 8px;
+      margin: 8px 0;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    `;
+    objectsPanel.insertBefore(multiSelectBtn, objectsPanel.firstChild.nextSibling);
+
+    let isMultiSelectMode = false;
+    let selectedBoxes = new Set();
+
+    // Add bulk actions container
+    const bulkActions = document.createElement('div');
+    bulkActions.style.cssText = `
+      display: none;
+      margin: 8px 0;
+      padding: 8px;
+      background: #f5f5f5;
+      border-radius: 4px;
+    `;
+    objectsPanel.insertBefore(bulkActions, multiSelectBtn.nextSibling);
+
+    // Add bulk action buttons
+    const bulkRenameBtn = document.createElement('button');
+    bulkRenameBtn.textContent = 'Rename Selected';
+    bulkRenameBtn.style.cssText = `
+      width: 100%;
+      padding: 8px;
+      margin: 4px 0;
+      background: #2196F3;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    `;
+
+    const bulkDeleteBtn = document.createElement('button');
+    bulkDeleteBtn.textContent = 'Delete Selected';
+    bulkDeleteBtn.style.cssText = `
+      width: 100%;
+      padding: 8px;
+      margin: 4px 0;
+      background: #f44336;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    `;
+
+    bulkActions.appendChild(bulkRenameBtn);
+    bulkActions.appendChild(bulkDeleteBtn);
+
+    // Function to handle button clicks
+    function handleButtonClick(e, btn) {
+      if (isMultiSelectMode) {
+        e.preventDefault();
+        e.stopPropagation();
+        const idx = btn.getAttribute('data-idx');
+        const box = document.querySelector(`.bbox[data-idx="${idx}"]`);
+        
+        if (selectedBoxes.has(idx)) {
+          selectedBoxes.delete(idx);
+          btn.style.border = '2px solid transparent';
+          btn.classList.remove('selected');
+          box.classList.remove('highlight');
+          box.classList.add('fade');
+        } else {
+          selectedBoxes.add(idx);
+          btn.style.border = '2px solid #2196F3';
+          btn.classList.add('selected');
+          box.classList.add('highlight');
+          box.classList.remove('fade');
+        }
+        return false;
+      } else {
+        // Normal mode - show popup
+        e.preventDefault();
+        currentIdx = btn.getAttribute('data-idx');
+        activeBox = document.querySelector(`.bbox[data-idx="${currentIdx}"]`);
+        if (!activeBox) return;
+        const rect = btn.getBoundingClientRect();
+        popup.style.left = (rect.right + window.scrollX + 8) + 'px';
+        popup.style.top = (rect.top + window.scrollY) + 'px';
+        popup.style.display = 'block';
+      }
+    }
+
+    // Toggle multi-select mode
+    multiSelectBtn.addEventListener('click', function() {
+      isMultiSelectMode = !isMultiSelectMode;
+      selectedBoxes.clear();
+      
+      if (isMultiSelectMode) {
+        multiSelectBtn.style.background = '#2196F3';
+        multiSelectBtn.textContent = 'Cancel Selection';
+        bulkActions.style.display = 'block';
+        
+        // Update button styles
+        document.querySelectorAll('.object-btn').forEach(btn => {
+          btn.style.border = '2px solid transparent';
+        });
+      } else {
+        multiSelectBtn.style.background = '#4CAF50';
+        multiSelectBtn.textContent = 'Select Multiple';
+        bulkActions.style.display = 'none';
+        
+        // Reset button styles
+        document.querySelectorAll('.object-btn').forEach(btn => {
+          btn.style.border = '';
+          btn.classList.remove('selected');
+        });
+        
+        // Reset box styles
+        document.querySelectorAll('.bbox').forEach(box => {
+          box.classList.remove('highlight');
+          box.classList.remove('fade');
+        });
+      }
+    });
+
+    // Remove all existing click handlers and add our new one
+    document.querySelectorAll('.object-btn').forEach(btn => {
+      const newBtn = btn.cloneNode(true);
+      btn.parentNode.replaceChild(newBtn, btn);
+      newBtn.addEventListener('click', (e) => handleButtonClick(e, newBtn));
+
+      // Add hover effects
+      newBtn.addEventListener('mouseenter', function() {
+        const idx = newBtn.getAttribute('data-idx');
+        document.querySelectorAll('.bbox').forEach(box => {
+          if (box.getAttribute('data-idx') === idx) {
+            box.classList.add('highlight');
+            // Only remove fade if not in multi-select mode or if this box is selected
+            if (!isMultiSelectMode || selectedBoxes.has(idx)) {
+              box.classList.remove('fade');
+            }
+          } else {
+            // In multi-select mode, don't fade selected boxes
+            if (!isMultiSelectMode || !selectedBoxes.has(box.getAttribute('data-idx'))) {
+              box.classList.remove('highlight');
+              box.classList.add('fade');
+            }
+          }
+        });
+      });
+
+      newBtn.addEventListener('mouseleave', function() {
+        document.querySelectorAll('.bbox').forEach(box => {
+          const idx = box.getAttribute('data-idx');
+          // In multi-select mode, maintain selection state
+          if (!isMultiSelectMode || !selectedBoxes.has(idx)) {
+            box.classList.remove('highlight');
+            box.classList.remove('fade');
+          }
+        });
+      });
+    });
+
+    // Update the createNewBox function to use the new click handler
+    const originalCreateNewBox = createNewBox;
+    createNewBox = function(x, y, width, height, label) {
+      originalCreateNewBox(x, y, width, height, label);
+      // Add click handler to the newly created button
+      const newBtn = document.querySelector(`.object-btn[data-idx="${document.querySelectorAll('.object-btn').length - 1}"]`);
+      if (newBtn) {
+        newBtn.addEventListener('click', (e) => handleButtonClick(e, newBtn));
+      }
+    };
+
+    // Bulk rename handler
+    bulkRenameBtn.addEventListener('click', function() {
+      if (selectedBoxes.size === 0) {
+        alert('Please select at least one object to rename');
+        return;
+      }
+
+      const newLabel = prompt('Enter new label for selected objects:');
+      if (!newLabel || newLabel.trim() === '') return;
+
+      // Get category for the new label
+      const existingCategory = getCategoryForLabel(newLabel);
+      let category = existingCategory;
+
+      if (!category) {
+        // Show category selection modal for new label
+        const existingCategories = getExistingCategories();
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          background: white;
+          padding: 20px;
+          border-radius: 8px;
+          box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+          z-index: 1000;
+        `;
+
+        const title = document.createElement('h3');
+        title.textContent = `Select Category for "${newLabel}"`;
+        title.style.marginBottom = '15px';
+        modal.appendChild(title);
+
+        const buttonContainer = document.createElement('div');
+        buttonContainer.style.cssText = `
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          margin-bottom: 15px;
+        `;
+
+        // Add "Create New Category" button
+        const newCategoryBtn = document.createElement('button');
+        newCategoryBtn.textContent = 'Create New Category';
+        newCategoryBtn.style.cssText = `
+          padding: 8px 16px;
+          background: #4CAF50;
+          color: white;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+        `;
+        newCategoryBtn.onclick = () => {
+          const newCategory = prompt('Enter new category name:');
+          if (newCategory && newCategory.trim()) {
+            category = newCategory.trim();
+            modal.remove();
+            performBulkRename();
+          }
+        };
+        buttonContainer.appendChild(newCategoryBtn);
+
+        // Add existing categories as buttons
+        existingCategories.forEach(cat => {
+          const catBtn = document.createElement('button');
+          catBtn.textContent = cat;
+          catBtn.style.cssText = `
+            padding: 8px 16px;
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+          `;
+          catBtn.onclick = () => {
+            category = cat;
+            modal.remove();
+            performBulkRename();
+          };
+          buttonContainer.appendChild(catBtn);
+        });
+
+        modal.appendChild(buttonContainer);
+        document.body.appendChild(modal);
+      } else {
+        performBulkRename();
+      }
+
+      function performBulkRename() {
+        if (!category) {
+          category = "Miscellaneous";
+        }
+
+        selectedBoxes.forEach(idx => {
+          const box = document.querySelector(`.bbox[data-idx="${idx}"]`);
+          const btn = document.querySelector(`.object-btn[data-idx="${idx}"]`);
+          if (box && btn) {
+            box.title = newLabel;
+            box.dataset.category = category;
+            btn.textContent = newLabel;
+            btn.dataset.category = category;
+          }
+        });
+
+        updateJsonData();
+        // Exit multi-select mode
+        multiSelectBtn.click();
+      }
+    });
+
+    // Bulk delete handler
+    bulkDeleteBtn.addEventListener('click', function() {
+      if (selectedBoxes.size === 0) {
+        alert('Please select at least one object to delete');
+        return;
+      }
+
+      if (!confirm(`Are you sure you want to delete ${selectedBoxes.size} selected objects?`)) {
+        return;
+      }
+
+      // Get current page and filter from URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const page = urlParams.get('page') || '1';
+      const filterClass = urlParams.get('class');
+
+      // Remove selected boxes and buttons
+      selectedBoxes.forEach(idx => {
+        const box = document.querySelector(`.bbox[data-idx="${idx}"]`);
+        const btn = document.querySelector(`.object-btn[data-idx="${idx}"]`);
+        if (box) box.remove();
+        if (btn) btn.remove();
+      });
+
+      // Update indices of remaining boxes and buttons
+      const remainingBoxes = document.querySelectorAll('.bbox');
+      const remainingButtons = document.querySelectorAll('.object-btn');
+      
+      remainingBoxes.forEach((box, index) => {
+        box.dataset.idx = index.toString();
+      });
+      
+      remainingButtons.forEach((btn, index) => {
+        btn.dataset.idx = index.toString();
+      });
+
+      // Update JSON data
+      const detections = Array.from(remainingBoxes).map(box => ({
+        label: box.title,
+        category: box.dataset.category || "Miscellaneous",
+        bbox: [
+          parseFloat(box.dataset.x),
+          parseFloat(box.dataset.y),
+          parseFloat(box.dataset.x) + parseFloat(box.dataset.w),
+          parseFloat(box.dataset.y) + parseFloat(box.dataset.h)
+        ]
+      }));
+
+      // Update allDetectionsData
+      if (window.allDetectionsData) {
+        window.allDetectionsData = window.allDetectionsData.filter(detection => {
+          if (detection._image_file !== img.src.split('/').pop()) {
+            return true;
+          }
+          return detections.some(d => 
+            d.label === detection.label &&
+            d.bbox[0] === detection.bbox[0] &&
+            d.bbox[1] === detection.bbox[1] &&
+            d.bbox[2] === detection.bbox[2] &&
+            d.bbox[3] === detection.bbox[3]
+          );
+        });
+      }
+
+      fetch(`/update_detections?page=${page}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          image_file: img.src.split('/').pop(),
+          detections: detections
+        })
+      }).then(() => {
+        if (filterClass && filterClass !== 'all') {
+          const remainingClassDetections = detections.filter(d => d.label === filterClass);
+          if (remainingClassDetections.length === 0) {
+            window.location.href = `${window.location.pathname}?page=1&class=${filterClass}`;
+            return;
+          }
+        }
+        updateStats();
+        // Exit multi-select mode
+        multiSelectBtn.click();
+      }).catch(error => {
+        console.error('Error updating detections:', error);
+        alert('Failed to save changes. Please try again.');
+      });
     });
   });
   

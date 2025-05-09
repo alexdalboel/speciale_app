@@ -8,12 +8,22 @@ app = Flask(__name__)
 with open('data/detections_50.json', 'r') as f:
     detections_data = json.load(f)
 
+# Create a working copy if it doesn't exist
+WORKING_PATH = 'data/detections_50_working.json'
+if not os.path.exists(WORKING_PATH):
+    with open(WORKING_PATH, 'w') as wf:
+        json.dump(detections_data, wf, indent=2)
+
+# Load working detections
+with open(WORKING_PATH, 'r') as wf:
+    working_detections_data = json.load(wf)
+
 @app.route('/')
 def index():
     # Pagination
     page = int(request.args.get('page', 1))
     per_page = 1
-    total_images = len(detections_data)
+    total_images = len(working_detections_data)
     total_pages = total_images
 
     # Get filter class from query parameter
@@ -22,7 +32,7 @@ def index():
     # Filter images based on class if a specific class is selected
     if filter_class != 'all':
         filtered_data = []
-        for image_data in detections_data:
+        for image_data in working_detections_data:
             if any(det['label'] == filter_class for det in image_data.get('detections', [])):
                 filtered_data.append(image_data)
         total_pages = len(filtered_data)
@@ -31,7 +41,7 @@ def index():
                 'index.html',
                 image_file=None,
                 labels=[],
-                unique_labels=sorted(list(set(d['label'] for img in detections_data for d in img.get('detections', [])))),
+                unique_labels=sorted(list(set(d['label'] for img in working_detections_data for d in img.get('detections', [])))),
                 page=1,
                 total_pages=1,
                 detections=[],
@@ -42,7 +52,7 @@ def index():
             page = total_pages
         current = filtered_data[page - 1]
     else:
-        current = detections_data[page - 1]
+        current = working_detections_data[page - 1]
 
     # Clamp page
     if page < 1: page = 1
@@ -58,7 +68,7 @@ def index():
 
     # Get all unique labels across all images for the filter
     all_labels = set()
-    for image_data in detections_data:
+    for image_data in working_detections_data:
         for detection in image_data.get('detections', []):
             all_labels.add(detection['label'])
     unique_labels = sorted(list(all_labels))
@@ -81,15 +91,22 @@ def update_detections():
         image_file = data['image_file']
         new_detections = data['detections']
         
-        # Find the current page from the URL
-        page = int(request.args.get('page', 1))
+        # Find the actual index of the image in the full dataset
+        actual_index = None
+        for i, img_data in enumerate(working_detections_data):
+            if img_data['image_file'] == image_file:
+                actual_index = i
+                break
         
-        # Update the detections for the current image
-        detections_data[page - 1]['detections'] = new_detections
+        if actual_index is None:
+            raise ValueError(f"Image {image_file} not found in dataset")
         
-        # Save the updated data back to the JSON file
-        with open('data/detections_50.json', 'w') as f:
-            json.dump(detections_data, f, indent=2)
+        # Update the detections for the current image in the working copy
+        working_detections_data[actual_index]['detections'] = new_detections
+        
+        # Save the updated data back to the working JSON file
+        with open(WORKING_PATH, 'w') as f:
+            json.dump(working_detections_data, f, indent=2)
         
         return jsonify({'success': True})
     except Exception as e:
@@ -99,14 +116,42 @@ def update_detections():
 @app.route('/get_all_detections')
 def get_all_detections():
     try:
-        return jsonify(detections_data)
+        # Return the working detections for annotation tool
+        return jsonify(working_detections_data)
     except Exception as e:
         print(f"Error getting all detections: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+@app.route('/get_stats_data')
+def get_stats_data():
+    try:
+        # Return both original and working detections for stats
+        with open('data/detections_50.json', 'r') as f:
+            original = json.load(f)
+        with open(WORKING_PATH, 'r') as wf:
+            working = json.load(wf)
+        return jsonify({'original': original, 'working': working})
+    except Exception as e:
+        print(f"Error getting stats data: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500
 
 @app.route('/stats')
 def stats():
     return render_template('stats.html')
+
+@app.route('/reset_working_copy', methods=['POST'])
+def reset_working_copy():
+    try:
+        with open('data/detections_50.json', 'r') as f:
+            original = json.load(f)
+        with open(WORKING_PATH, 'w') as wf:
+            json.dump(original, wf, indent=2)
+        global working_detections_data
+        working_detections_data = original
+        return jsonify({'success': True})
+    except Exception as e:
+        print(f"Error resetting working copy: {str(e)}")
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8000, debug=True)

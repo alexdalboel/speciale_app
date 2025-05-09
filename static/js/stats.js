@@ -1,243 +1,202 @@
-// Function to fetch and process the detection data
-async function loadAndProcessData() {
-    try {
-        const response = await fetch('/get_all_detections');
-        const data = await response.json();
-        
-        // Calculate statistics
-        const stats = calculateStatistics(data);
-        
-        // Create charts and word cloud
-        createDonutChartsAndWordCloud(stats);
-        createValueChart(stats);
-        
-        // Update detailed statistics table
-        updateStatsTable(stats);
-    } catch (error) {
-        console.error('Error loading data:', error);
-    }
-}
+// Fetch both original and working detections, then compute and visualize the diff
+fetch('/get_stats_data')
+  .then(res => res.json())
+  .then(data => {
+    const { original, working } = data;
+    const correctionLog = computeCorrectionLog(original, working);
+    updateStats(correctionLog, working);
+  });
 
-// Calculate various statistics from the data
-function calculateStatistics(data) {
-    const stats = {
-        totalImages: data.length,
-        totalDetections: 0,
-        uniqueLabels: new Set(),
-        uniqueCategories: new Set(),
-        labelCounts: {},
-        categoryCounts: {},
-        averageDetectionsPerImage: 0,
-        averageConfidence: 0,
-        totalConfidence: 0,
-        confidenceCount: 0
-    };
+// Compute a correction log (diff) between original and working detections using IoU-based matching
+function computeCorrectionLog(original, working) {
+  const log = [];
+  const IOU_THRESHOLD = 0.5;
+  for (let i = 0; i < original.length; i++) {
+    const origImg = original[i];
+    const workImg = working[i];
+    const imageId = origImg.image_file;
+    const origDet = origImg.detections || [];
+    const workDet = workImg.detections || [];
 
-    // Process each image
-    data.forEach(image => {
-        const detections = image.detections || [];
-        stats.totalDetections += detections.length;
+    // Track which detections have been matched
+    const matchedOrig = new Set();
+    const matchedWork = new Set();
 
-        // Process each detection
-        detections.forEach(detection => {
-            // Count labels
-            const label = detection.label;
-            stats.uniqueLabels.add(label);
-            stats.labelCounts[label] = (stats.labelCounts[label] || 0) + 1;
-
-            // Count categories
-            const category = detection.category;
-            stats.uniqueCategories.add(category);
-            stats.categoryCounts[category] = (stats.categoryCounts[category] || 0) + 1;
-
-            // Calculate confidence statistics
-            if (detection.score) {
-                stats.totalConfidence += detection.score;
-                stats.confidenceCount++;
-            }
+    // For each original detection, find best match in working by IoU
+    origDet.forEach((od, oidx) => {
+      let bestMatchIdx = -1;
+      let bestIoU = 0;
+      workDet.forEach((wd, widx) => {
+        if (matchedWork.has(widx)) return;
+        const iouVal = iou(od.bbox, wd.bbox);
+        if (iouVal > bestIoU) {
+          bestIoU = iouVal;
+          bestMatchIdx = widx;
+        }
+      });
+      if (bestIoU > IOU_THRESHOLD && bestMatchIdx !== -1) {
+        matchedOrig.add(oidx);
+        matchedWork.add(bestMatchIdx);
+        const wd = workDet[bestMatchIdx];
+        if (od.label !== wd.label) {
+          log.push({
+            imageId,
+            type: 'label_change',
+            originalLabel: od.label,
+            newLabel: wd.label,
+            bbox: wd.bbox,
+            undone: false
+          });
+        }
+        // Only log bbox adjustment if the bbox coordinates are actually different
+        // Use a small threshold to account for floating point precision
+        const bboxChanged = od.bbox.some((coord, idx) => Math.abs(coord - wd.bbox[idx]) > 0.0001);
+        if (bboxChanged) {
+          log.push({
+            imageId,
+            type: 'bbox_adjust',
+            originalLabel: od.label,
+            bbox: wd.bbox,
+            undone: false
+          });
+        }
+      } else {
+        // No match found: removal
+        log.push({
+          imageId,
+          type: 'remove',
+          originalLabel: od.label,
+          bbox: od.bbox,
+          undone: false
         });
+      }
     });
 
-    // Calculate averages
-    stats.averageDetectionsPerImage = stats.totalDetections / stats.totalImages;
-    stats.averageConfidence = stats.totalConfidence / stats.confidenceCount;
-
-    // Convert Sets to Arrays and sort
-    stats.uniqueLabels = Array.from(stats.uniqueLabels).sort();
-    stats.uniqueCategories = Array.from(stats.uniqueCategories).sort();
-
-    return stats;
-}
-
-// Create donut charts and word cloud
-function createDonutChartsAndWordCloud(stats) {
-    createCategoryDonutChart(stats);
-    createLabelDonutChart(stats);
-    createLabelWordCloud(stats);
-}
-
-// Donut chart for category distribution
-function createCategoryDonutChart(stats) {
-    const ctx = document.getElementById('categoryDonutChart').getContext('2d');
-    const categories = Object.keys(stats.categoryCounts);
-    const counts = Object.values(stats.categoryCounts);
-    const colors = [
-        'rgba(54, 162, 235, 0.7)',
-        'rgba(255, 99, 132, 0.7)',
-        'rgba(255, 206, 86, 0.7)',
-        'rgba(75, 192, 192, 0.7)',
-        'rgba(153, 102, 255, 0.7)',
-        'rgba(255, 159, 64, 0.7)',
-        'rgba(199, 199, 199, 0.7)',
-        'rgba(83, 102, 255, 0.7)',
-        'rgba(40, 159, 64, 0.7)',
-        'rgba(210, 199, 199, 0.7)'
-    ];
-    new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: categories,
-            datasets: [{
-                data: counts,
-                backgroundColor: colors,
-                borderColor: '#fff',
-                borderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { position: 'right' },
-                title: { display: true, text: 'Category Distribution' }
-            }
-        }
-    });
-}
-
-// Donut chart for top 10 labels
-function createLabelDonutChart(stats) {
-    const ctx = document.getElementById('labelDonutChart').getContext('2d');
-    const labels = Object.keys(stats.labelCounts);
-    const counts = Object.values(stats.labelCounts);
-    // Sort by count and take top 10
-    const sortedData = labels.map((label, index) => ({
-        label,
-        count: counts[index]
-    })).sort((a, b) => b.count - a.count).slice(0, 10);
-    const donutColors = [
-        'rgba(255, 99, 132, 0.7)',
-        'rgba(54, 162, 235, 0.7)',
-        'rgba(255, 206, 86, 0.7)',
-        'rgba(75, 192, 192, 0.7)',
-        'rgba(153, 102, 255, 0.7)',
-        'rgba(255, 159, 64, 0.7)',
-        'rgba(199, 199, 199, 0.7)',
-        'rgba(83, 102, 255, 0.7)',
-        'rgba(40, 159, 64, 0.7)',
-        'rgba(210, 199, 199, 0.7)'
-    ];
-    new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: sortedData.map(item => item.label),
-            datasets: [{
-                data: sortedData.map(item => item.count),
-                backgroundColor: donutColors,
-                borderColor: '#fff',
-                borderWidth: 2
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { position: 'right' },
-                title: { display: true, text: 'Top 10 Labels' }
-            }
-        }
-    });
-}
-
-// Word cloud for all detected labels
-function createLabelWordCloud(stats) {
-    const wordList = Object.entries(stats.labelCounts).map(([label, count]) => [label, count]);
-    const wordCloudDiv = document.getElementById('labelWordCloud');
-    wordCloudDiv.innerHTML = '';
-    if (wordList.length > 0) {
-        WordCloud(wordCloudDiv, {
-            list: wordList,
-            gridSize: 10,
-            weightFactor: 10,
-            fontFamily: 'Arial',
-            color: 'random-dark',
-            backgroundColor: '#fff',
-            rotateRatio: 0.2,
-            minSize: 8,
-            drawOutOfBound: false
+    // For each working detection not matched, it's an addition
+    workDet.forEach((wd, widx) => {
+      if (!matchedWork.has(widx)) {
+        log.push({
+          imageId,
+          type: 'add',
+          newLabel: wd.label,
+          bbox: wd.bbox,
+          undone: false
         });
+      }
+    });
+  }
+  return log;
+}
+
+function updateStats(correctionLog, detectionsData) {
+  const active = correctionLog.filter(c => !c.undone);
+
+  // 1. Label Change Heatmap
+  const labelRenames = active.filter(
+    c => c.type === 'label_change' && c.originalLabel !== c.newLabel
+  );
+  const labelSet = new Set();
+  labelRenames.forEach(c => {
+    labelSet.add(c.originalLabel);
+    labelSet.add(c.newLabel);
+  });
+  const labels = Array.from(labelSet);
+  const heatmapMatrix = labels.map(() => labels.map(() => 0));
+  labelRenames.forEach(c => {
+    const i = labels.indexOf(c.originalLabel);
+    const j = labels.indexOf(c.newLabel);
+    heatmapMatrix[i][j] += 1;
+  });
+  Plotly.newPlot('label-change-heatmap', [{
+    z: heatmapMatrix,
+    x: labels,
+    y: labels,
+    type: 'heatmap',
+    colorscale: 'YlOrRd',
+    hoverongaps: false,
+    hovertemplate: 'Original: %{y}<br>Corrected: %{x}<br>Instances: %{z}<extra></extra>'
+  }], {
+    title: 'Label Change Heatmap',
+    xaxis: { title: 'Corrected Label' },
+    yaxis: { title: 'Original Label' }
+  });
+
+  // 2. Most Frequently Added/Removed Labels
+  const added = {}, removed = {};
+  active.forEach(c => {
+    if (c.type === 'add') added[c.newLabel] = (added[c.newLabel] || 0) + 1;
+    if (c.type === 'remove') removed[c.originalLabel] = (removed[c.originalLabel] || 0) + 1;
+  });
+  const addedLabels = Object.keys(added);
+  const removedLabels = Object.keys(removed);
+  Plotly.newPlot('added-removed-labels', [
+    {
+      x: addedLabels,
+      y: addedLabels.map(l => added[l]),
+      name: 'Added',
+      type: 'bar',
+      marker: { color: 'green' }
+    },
+    {
+      x: removedLabels,
+      y: removedLabels.map(l => removed[l]),
+      name: 'Removed',
+      type: 'bar',
+      marker: { color: 'red' }
     }
+  ], {
+    barmode: 'group',
+    title: 'Most Frequently Added/Removed Labels',
+    xaxis: { title: 'Label' },
+    yaxis: { title: 'Count' }
+  });
+
+  // 3. Correction Type Breakdown
+  const typeCounts = {};
+  active.forEach(c => {
+    let type = c.type === 'remove' ? 'delete' : c.type;
+    typeCounts[type] = (typeCounts[type] || 0) + 1;
+  });
+  Plotly.newPlot('correction-type-breakdown', [{
+    labels: Object.keys(typeCounts),
+    values: Object.values(typeCounts),
+    type: 'pie',
+    textinfo: 'label+percent',
+    marker: { colors: ['#636EFA', '#EF553B', '#00CC96', '#AB63FA'] }
+  }], {
+    title: 'Correction Type Breakdown'
+  });
+
+  // 4. Top Images with Most Corrections
+  const imageCounts = {};
+  active.forEach(c => {
+    imageCounts[c.imageId] = (imageCounts[c.imageId] || 0) + 1;
+  });
+  const topImages = Object.entries(imageCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5);
+  Plotly.newPlot('top-images-corrections', [{
+    x: topImages.map(([img]) => img),
+    y: topImages.map(([, count]) => count),
+    type: 'bar',
+    marker: { color: '#FFA15A' }
+  }], {
+    title: 'Top Images with Most Corrections',
+    xaxis: { title: 'Image' },
+    yaxis: { title: 'Corrections' }
+  });
 }
 
-// Create value distribution chart (confidence scores)
-function createValueChart(stats) {
-    const ctx = document.getElementById('valueChart').getContext('2d');
-    // Create confidence score ranges
-    const ranges = [
-        '0.0-0.2', '0.2-0.4', '0.4-0.6', '0.6-0.8', '0.8-1.0'
-    ];
-    // Count detections in each range
-    const counts = new Array(ranges.length).fill(0);
-    // Process all detections to count confidence scores
-    Object.values(stats.labelCounts).forEach(count => {
-        const confidence = count / stats.totalDetections;
-        const rangeIndex = Math.min(Math.floor(confidence * 5), 4);
-        counts[rangeIndex]++;
-    });
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ranges,
-            datasets: [{
-                label: 'Number of Detections',
-                data: counts,
-                backgroundColor: 'rgba(75, 192, 192, 0.5)',
-                borderColor: 'rgba(75, 192, 192, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { position: 'top' },
-                title: { display: true, text: 'Confidence Score Distribution' }
-            },
-            scales: {
-                y: { beginAtZero: true }
-            }
-        }
-    });
+function iou(boxA, boxB) {
+  const [xA1, yA1, xA2, yA2] = boxA;
+  const [xB1, yB1, xB2, yB2] = boxB;
+  const x1 = Math.max(xA1, xB1);
+  const y1 = Math.max(yA1, yB1);
+  const x2 = Math.min(xA2, xB2);
+  const y2 = Math.min(yA2, yB2);
+  const interArea = Math.max(0, x2 - x1) * Math.max(0, y2 - y1);
+  const boxAArea = (xA2 - xA1) * (yA2 - yA1);
+  const boxBArea = (xB2 - xB1) * (yB2 - yB1);
+  const unionArea = boxAArea + boxBArea - interArea;
+  return unionArea === 0 ? 0 : interArea / unionArea;
 }
-
-// Update the detailed statistics table
-function updateStatsTable(stats) {
-    const tableBody = document.getElementById('statsTable');
-    tableBody.innerHTML = '';
-    const tableData = [
-        ['Total Images', stats.totalImages],
-        ['Total Detections', stats.totalDetections],
-        ['Unique Labels', stats.uniqueLabels.length],
-        ['Unique Categories', stats.uniqueCategories.length],
-        ['Average Detections per Image', stats.averageDetectionsPerImage.toFixed(2)],
-        ['Average Confidence Score', stats.averageConfidence.toFixed(2)]
-    ];
-    tableData.forEach(([metric, value]) => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${metric}</td>
-            <td>${value}</td>
-        `;
-        tableBody.appendChild(row);
-    });
-}
-
-// Load data when the page loads
-document.addEventListener('DOMContentLoaded', loadAndProcessData); 
