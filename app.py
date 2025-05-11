@@ -139,6 +139,31 @@ def get_stats_data():
 def stats():
     return render_template('stats.html')
 
+@app.route('/visitor')
+def visitor():
+    return render_template('visitor.html')
+
+@app.route('/api/labels')
+def get_labels():
+    # Get all unique labels across all images
+    all_labels = set()
+    for image_data in working_detections_data:
+        for detection in image_data.get('detections', []):
+            all_labels.add(detection['label'])
+    return jsonify(sorted(list(all_labels)))
+
+@app.route('/api/artworks')
+def get_artworks():
+    # Return all artworks with their detections
+    artworks = []
+    for image_data in working_detections_data:
+        artwork = {
+            'image_url': url_for('static', filename=f'artworks_50/{image_data["image_file"]}'),
+            'detections': image_data.get('detections', [])
+        }
+        artworks.append(artwork)
+    return jsonify(artworks)
+
 @app.route('/reset_working_copy', methods=['POST'])
 def reset_working_copy():
     try:
