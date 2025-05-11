@@ -7,7 +7,10 @@ window.addEventListener('DOMContentLoaded', function () {
       .bbox {
         pointer-events: none;
         position: absolute;
-        border: 2px solid #4CAF50;
+        border: 2px solid red !important;
+      }
+      .bbox.user-added {
+        border: 2px solid #2196F3 !important;
       }
       .bbox.resizing {
         pointer-events: auto;
@@ -17,10 +20,13 @@ window.addEventListener('DOMContentLoaded', function () {
         width: 10px;
         height: 10px;
         background-color: white;
-        border: 2px solid #4CAF50;
+        border: 2px solid red;
         border-radius: 50%;
         pointer-events: auto;
         z-index: 1000;
+      }
+      .bbox.user-added .resize-handle {
+        border: 2px solid #2196F3;
       }
       .resize-handle.nw { top: -5px; left: -5px; cursor: nw-resize; }
       .resize-handle.ne { top: -5px; right: -5px; cursor: ne-resize; }
@@ -28,8 +34,8 @@ window.addEventListener('DOMContentLoaded', function () {
       .resize-handle.se { bottom: -5px; right: -5px; cursor: se-resize; }
       .creating-box {
         position: absolute;
-        border: 2px dashed #4CAF50;
-        background-color: rgba(76, 175, 80, 0.1);
+        border: 2px dashed #2196F3;
+        background-color: rgba(33, 150, 243, 0.1);
         pointer-events: none;
       }
       .guideline {
@@ -860,7 +866,7 @@ window.addEventListener('DOMContentLoaded', function () {
     function createNewBox(x, y, width, height, label) {
       const container = imageContainer;
       const box = document.createElement('div');
-      box.className = 'bbox';
+      box.className = 'bbox user-added';
       box.dataset.x = x;
       box.dataset.y = y;
       box.dataset.w = width;
