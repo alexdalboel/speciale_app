@@ -10,7 +10,7 @@ fetch('/get_stats_data')
 // Compute a correction log (diff) between original and working detections using IoU-based matching
 function computeCorrectionLog(original, working) {
   const log = [];
-  const IOU_THRESHOLD = 0.5;
+  const IOU_THRESHOLD = 0.3; // Lower threshold to better handle resized boxes
   for (let i = 0; i < original.length; i++) {
     const origImg = original[i];
     const workImg = working[i];
@@ -22,7 +22,7 @@ function computeCorrectionLog(original, working) {
     const matchedOrig = new Set();
     const matchedWork = new Set();
 
-    // For each original detection, find best match in working by IoU
+    // First pass: Try to match detections with same label
     origDet.forEach((od, oidx) => {
       let bestMatchIdx = -1;
       let bestIoU = 0;
@@ -49,7 +49,6 @@ function computeCorrectionLog(original, working) {
           });
         }
         // Only log bbox adjustment if the bbox coordinates are actually different
-        // Use a small threshold to account for floating point precision
         const bboxChanged = od.bbox.some((coord, idx) => Math.abs(coord - wd.bbox[idx]) > 0.0001);
         if (bboxChanged) {
           log.push({
@@ -124,7 +123,7 @@ function updateStats(correctionLog, detectionsData) {
   // 2. Most Frequently Added/Removed Labels
   const added = {}, removed = {};
   active.forEach(c => {
-    if (c.type === 'add') added[c.newLabel] = (added[c.newLabel] || 0) + 1;
+    if (c.type === 'add' && c.type !== 'bbox_adjust') added[c.newLabel] = (added[c.newLabel] || 0) + 1;
     if (c.type === 'remove') removed[c.originalLabel] = (removed[c.originalLabel] || 0) + 1;
   });
   const addedLabels = Object.keys(added);
@@ -164,7 +163,10 @@ function updateStats(correctionLog, detectionsData) {
     textinfo: 'label+percent',
     marker: { colors: ['#636EFA', '#EF553B', '#00CC96', '#AB63FA'] }
   }], {
-    title: 'Correction Type Breakdown'
+    title: 'Correction Type Breakdown',
+    height: 500,
+    width: 500,
+    margin: { t: 50, b: 50, l: 50, r: 50 }
   });
 
   // 4. Top Images with Most Corrections

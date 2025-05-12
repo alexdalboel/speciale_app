@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const paginationContainer = document.getElementById('paginationContainer');
     let artworksData = null;
     const cutoutCache = {};
-    let currentView = 'cutout'; // Track current view mode
+    let currentView = 'image'; // Track current view mode
     let isPanning = false;
     let hasMoved = false;
     let startX = 0;
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const labels = new Set();
         artworksData.forEach(artwork => {
             artwork.detections.forEach(detection => {
-                if (selectedCategory === 'all' || detection.category === selectedCategory) {
+                if (selectedCategory === 'all' || selectedCategory === 'random' || detection.category === selectedCategory) {
                     labels.add(detection.label);
                 }
             });
@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', function() {
             artworksData = await artworksResponse.json();
 
             // Populate category select with unique categories
-            const categories = new Set();
+            const categories = new Set(['random']); // Add random as first option
             artworksData.forEach(artwork => {
                 artwork.detections.forEach(detection => {
                     if (detection.category) {
@@ -72,15 +72,15 @@ document.addEventListener('DOMContentLoaded', function() {
             Array.from(categories).sort().forEach(category => {
                 const option = document.createElement('option');
                 option.value = category;
-                option.textContent = category;
+                option.textContent = category === 'random' ? 'Random' : category;
                 categorySelect.appendChild(option);
             });
 
-            // Initialize label options for 'all' category
-            updateLabelOptions('all');
+            // Initialize label options for 'random' category
+            updateLabelOptions('random');
 
-            // Display all cutouts initially
-            displayContent('all', 'all');
+            // Display random selection initially
+            displayContent('all', 'random');
         } catch (error) {
             console.error('Error initializing data:', error);
         }
@@ -191,8 +191,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, totalItems);
         const pageItems = matchingItems.slice(startIndex, endIndex);
 
-        const items = [];
-        for (const item of pageItems) {
+        // Create all cutouts in parallel
+        const items = await Promise.all(pageItems.map(async (item) => {
             if (item.type === 'cutout') {
                 try {
                     const cutout = await getOrCreateCutout(
@@ -201,21 +201,59 @@ document.addEventListener('DOMContentLoaded', function() {
                         item.detection.label
                     );
                     cutout.originalImageUrl = item.artwork.image_url;
-                    items.push(cutout);
+                    return cutout;
                 } catch (error) {
                     console.error('Error creating cutout:', error);
+                    return null;
                 }
             } else {
-                items.push({
+                return {
                     url: item.artwork.image_url,
                     width: item.artwork.width || 800,
                     height: item.artwork.height || 600
-                });
+                };
             }
-        }
+        }));
+
+        // Filter out any failed cutouts
+        const validItems = items.filter(item => item !== null);
 
         // Store the preloaded items
-        preloadedItems.set(pageNumber, items);
+        preloadedItems.set(pageNumber, validItems);
+    }
+
+    // Helper function to load items for a specific page
+    async function loadPageItems(pageNumber, matchingItems) {
+        const startIndex = (pageNumber - 1) * ITEMS_PER_PAGE;
+        const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, totalItems);
+        const pageItems = matchingItems.slice(startIndex, endIndex);
+
+        // Create all cutouts in parallel
+        const items = await Promise.all(pageItems.map(async (item) => {
+            if (item.type === 'cutout') {
+                try {
+                    const cutout = await getOrCreateCutout(
+                        item.artwork.image_url,
+                        item.detection.bbox,
+                        item.detection.label
+                    );
+                    cutout.originalImageUrl = item.artwork.image_url;
+                    return cutout;
+                } catch (error) {
+                    console.error('Error creating cutout:', error);
+                    return null;
+                }
+            } else {
+                return {
+                    url: item.artwork.image_url,
+                    width: item.artwork.width || 800,
+                    height: item.artwork.height || 600
+                };
+            }
+        }));
+
+        // Filter out any failed cutouts
+        return items.filter(item => item !== null);
     }
 
     // Display cutouts or full images based on current view
@@ -243,6 +281,88 @@ document.addEventListener('DOMContentLoaded', function() {
                 modal.style.display = 'none';
             });
         }
+
+        // Show loading indicator
+        const loadingIndicator = document.createElement('div');
+        loadingIndicator.textContent = 'Loading...';
+        loadingIndicator.style.textAlign = 'center';
+        loadingIndicator.style.padding = '20px';
+        gallery.appendChild(loadingIndicator);
+
+        // First, collect all matching detections/artworks without creating cutouts
+        let matchingItems = [];
+        if (currentView === 'cutout') {
+            // Collect all matching detections first
+            for (const artwork of artworksData) {
+                const detections = artwork.detections.filter(detection => {
+                    const labelMatch = !label || label === 'all' || detection.label === label;
+                    const categoryMatch = category === 'random' || !category || category === 'all' || detection.category === category;
+                    return labelMatch && categoryMatch;
+                });
+                
+                for (const detection of detections) {
+                    matchingItems.push({
+                        type: 'cutout',
+                        artwork: artwork,
+                        detection: detection
+                    });
+                }
+            }
+        } else {
+            // Collect all matching artworks
+            for (const artwork of artworksData) {
+                const hasMatchingDetection = artwork.detections.some(detection => {
+                    const labelMatch = !label || label === 'all' || detection.label === label;
+                    const categoryMatch = category === 'random' || !category || category === 'all' || detection.category === category;
+                    return labelMatch && categoryMatch;
+                });
+
+                if (hasMatchingDetection) {
+                    matchingItems.push({
+                        type: 'image',
+                        artwork: artwork
+                    });
+                }
+            }
+        }
+
+        // If random category is selected, shuffle and limit to 100 items
+        if (category === 'random') {
+            // Fisher-Yates shuffle algorithm
+            for (let i = matchingItems.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [matchingItems[i], matchingItems[j]] = [matchingItems[j], matchingItems[i]];
+            }
+            matchingItems = matchingItems.slice(0, 100);
+        }
+
+        // Update pagination info
+        totalItems = matchingItems.length;
+        totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+        currentPage = Math.min(currentPage, totalPages);
+        if (currentPage < 1) currentPage = 1;
+
+        // Clear preloaded items when filters change
+        preloadedItems.clear();
+
+        // Load current page and preload next page
+        let items;
+        if (preloadedItems.has(currentPage)) {
+            // Use preloaded items if available
+            items = preloadedItems.get(currentPage);
+            preloadedItems.delete(currentPage);
+        } else {
+            // Load current page items
+            items = await loadPageItems(currentPage, matchingItems);
+        }
+
+        // Preload next page if available
+        if (currentPage < totalPages) {
+            preloadPageItems(currentPage + 1, matchingItems);
+        }
+
+        // Remove loading indicator
+        gallery.removeChild(loadingIndicator);
 
         function showModal(imageUrl) {
             // If we're in the middle of a drag operation, don't show the modal
@@ -272,68 +392,6 @@ document.addEventListener('DOMContentLoaded', function() {
             modal.innerHTML = '';
             modal.appendChild(modalImg);
             modal.style.display = 'block';
-        }
-
-        // First, collect all matching detections/artworks without creating cutouts
-        let matchingItems = [];
-        if (currentView === 'cutout') {
-            // Collect all matching detections first
-            for (const artwork of artworksData) {
-                const detections = artwork.detections.filter(detection => {
-                    const labelMatch = !label || label === 'all' || detection.label === label;
-                    const categoryMatch = !category || category === 'all' || detection.category === category;
-                    return labelMatch && categoryMatch;
-                });
-                
-                for (const detection of detections) {
-                    matchingItems.push({
-                        type: 'cutout',
-                        artwork: artwork,
-                        detection: detection
-                    });
-                }
-            }
-        } else {
-            // Collect all matching artworks
-            for (const artwork of artworksData) {
-                const hasMatchingDetection = artwork.detections.some(detection => {
-                    const labelMatch = !label || label === 'all' || detection.label === label;
-                    const categoryMatch = !category || category === 'all' || detection.category === category;
-                    return labelMatch && categoryMatch;
-                });
-
-                if (hasMatchingDetection) {
-                    matchingItems.push({
-                        type: 'image',
-                        artwork: artwork
-                    });
-                }
-            }
-        }
-
-        // Update pagination info
-        totalItems = matchingItems.length;
-        totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
-        currentPage = Math.min(currentPage, totalPages);
-        if (currentPage < 1) currentPage = 1;
-
-        // Clear preloaded items when filters change
-        preloadedItems.clear();
-
-        // Load current page and preload next page
-        let items;
-        if (preloadedItems.has(currentPage)) {
-            // Use preloaded items if available
-            items = preloadedItems.get(currentPage);
-            preloadedItems.delete(currentPage);
-        } else {
-            // Load current page items
-            items = await loadPageItems(currentPage, matchingItems);
-        }
-
-        // Preload next page if available
-        if (currentPage < totalPages) {
-            preloadPageItems(currentPage + 1, matchingItems);
         }
 
         // Fit items to viewport
@@ -430,37 +488,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Helper function to load items for a specific page
-    async function loadPageItems(pageNumber, matchingItems) {
-        const startIndex = (pageNumber - 1) * ITEMS_PER_PAGE;
-        const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, totalItems);
-        const pageItems = matchingItems.slice(startIndex, endIndex);
-
-        const items = [];
-        for (const item of pageItems) {
-            if (item.type === 'cutout') {
-                try {
-                    const cutout = await getOrCreateCutout(
-                        item.artwork.image_url,
-                        item.detection.bbox,
-                        item.detection.label
-                    );
-                    cutout.originalImageUrl = item.artwork.image_url;
-                    items.push(cutout);
-                } catch (error) {
-                    console.error('Error creating cutout:', error);
-                }
-            } else {
-                items.push({
-                    url: item.artwork.image_url,
-                    width: item.artwork.width || 800,
-                    height: item.artwork.height || 600
-                });
-            }
-        }
-        return items;
-    }
-
     // Event listeners for label and category selection
     labelSelect.addEventListener('change', function() {
         currentPage = 1; // Reset to first page when filters change
@@ -492,4 +519,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize the page
     initializeData();
+    
+    // Set initial button text
+    document.getElementById('viewToggleBtn').textContent = 'Switch to Cutout View';
 });
