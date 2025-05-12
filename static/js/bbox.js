@@ -151,12 +151,18 @@ window.addEventListener('DOMContentLoaded', function () {
             d.label === label && d._image_file === img.src.split('/').pop()
           );
           
-          if (matchingDetection && matchingDetection.category) {
-            box.dataset.category = matchingDetection.category;
-            // Also update the corresponding button
-            const btn = document.querySelector(`.object-btn[data-idx="${box.dataset.idx}"]`);
-            if (btn) {
-              btn.dataset.category = matchingDetection.category;
+          if (matchingDetection) {
+            if (matchingDetection.category) {
+              box.dataset.category = matchingDetection.category;
+              // Also update the corresponding button
+              const btn = document.querySelector(`.object-btn[data-idx="${box.dataset.idx}"]`);
+              if (btn) {
+                btn.dataset.category = matchingDetection.category;
+              }
+            }
+            // Set user-added status from the detection data
+            if (matchingDetection.is_user_added) {
+              box.classList.add('user-added');
             }
           } else {
             box.dataset.category = "Miscellaneous";
@@ -165,6 +171,8 @@ window.addEventListener('DOMContentLoaded', function () {
             if (btn) {
               btn.dataset.category = "Miscellaneous";
             }
+            // If no matching detection found, it's a user-added box
+            box.classList.add('user-added');
           }
         });
 
@@ -326,7 +334,8 @@ window.addEventListener('DOMContentLoaded', function () {
             parseFloat(box.dataset.y),
             parseFloat(box.dataset.x) + parseFloat(box.dataset.w),
             parseFloat(box.dataset.y) + parseFloat(box.dataset.h)
-          ]
+          ],
+          is_user_added: box.classList.contains('user-added')
         }));
 
         // Update the current page's detections

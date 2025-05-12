@@ -3121,7 +3121,19 @@
   },
   {
     "image_file": "pa1163184.jpeg",
-    "detections": []
+    "detections": [
+      {
+        "label": "nazi symbol",
+        "category": "Symbols & Identification",
+        "score": 0.277,
+        "bbox": [
+          69.0,
+          905.8,
+          115.8,
+          1003.7
+        ]
+      }
+    ]
   },
   {
     "image_file": "irn6214.jpeg",
@@ -11467,6 +11479,7 @@
       {
         "label": "book",
         "category": "Miscellaneous",
+        "score": 0.303,
         "bbox": [
           404.4,
           350.3,
@@ -11477,6 +11490,7 @@
       {
         "label": "cabinet",
         "category": "Furniture & Indoor Objects",
+        "score": 0.272,
         "bbox": [
           246.8,
           316.9,
@@ -11487,16 +11501,18 @@
       {
         "label": "sleeping quarters",
         "category": "Buildings & Infrastructure",
+        "score": 0.257,
         "bbox": [
           153.7,
           314.4,
-          624,
+          624.0,
           758.7
         ]
       },
       {
         "label": "bed",
         "category": "Furniture & Indoor Objects",
+        "score": 0.372,
         "bbox": [
           401.4,
           396.4,
@@ -11507,6 +11523,7 @@
       {
         "label": "table",
         "category": "Furniture & Indoor Objects",
+        "score": 0.257,
         "bbox": [
           842.7,
           487.5,
@@ -11517,6 +11534,7 @@
       {
         "label": "blanket",
         "category": "Furniture & Indoor Objects",
+        "score": 0.323,
         "bbox": [
           432.3,
           532.7,
@@ -11527,6 +11545,7 @@
       {
         "label": "bed",
         "category": "Furniture & Indoor Objects",
+        "score": 0.605,
         "bbox": [
           147.2,
           508.1,
@@ -11537,6 +11556,7 @@
       {
         "label": "blanket",
         "category": "Furniture & Indoor Objects",
+        "score": 0.315,
         "bbox": [
           430.8,
           531.1,
@@ -11547,6 +11567,7 @@
       {
         "label": "stool",
         "category": "Furniture & Indoor Objects",
+        "score": 0.556,
         "bbox": [
           833.7,
           595.7,
@@ -11557,9 +11578,10 @@
       {
         "label": "bed",
         "category": "Furniture & Indoor Objects",
+        "score": 0.341,
         "bbox": [
-          136,
-          502,
+          136.0,
+          502.0,
           421.4,
           777.7
         ]
@@ -11567,6 +11589,7 @@
       {
         "label": "building",
         "category": "Buildings & Infrastructure",
+        "score": 0.263,
         "bbox": [
           637.6,
           358.7,
@@ -11577,6 +11600,7 @@
       {
         "label": "window",
         "category": "Buildings & Infrastructure",
+        "score": 0.334,
         "bbox": [
           23.6,
           972.4,
@@ -11587,6 +11611,7 @@
       {
         "label": "bridge",
         "category": "Buildings & Infrastructure",
+        "score": 0.32,
         "bbox": [
           729.1,
           1001.9,
@@ -11597,6 +11622,7 @@
       {
         "label": "stairs",
         "category": "Buildings & Infrastructure",
+        "score": 0.255,
         "bbox": [
           707.8,
           1040.9,
@@ -11605,10 +11631,22 @@
         ]
       },
       {
+        "label": "bicycle",
+        "category": "Vehicles & Transport",
+        "score": 0.266,
+        "bbox": [
+          1111.4,
+          1124.7,
+          1217.8,
+          1178.9
+        ]
+      },
+      {
         "label": "ladder",
         "category": "Weapons & Tools",
+        "score": 0.447,
         "bbox": [
-          1261,
+          1261.0,
           1043.5,
           1417.4,
           1177.7
@@ -26343,9 +26381,10 @@
       {
         "label": "bird",
         "category": "Animals",
+        "score": 0.478,
         "bbox": [
           24.3,
-          107,
+          107.0,
           51.7,
           127.9
         ]
@@ -26353,6 +26392,7 @@
       {
         "label": "tree",
         "category": "Nature & Outdoor Features",
+        "score": 0.573,
         "bbox": [
           241.2,
           12.3,
@@ -26363,6 +26403,7 @@
       {
         "label": "bird",
         "category": "Animals",
+        "score": 0.54,
         "bbox": [
           56.3,
           128.2,
@@ -26371,8 +26412,20 @@
         ]
       },
       {
+        "label": "rope",
+        "category": "Miscellaneous",
+        "score": 0.327,
+        "bbox": [
+          246.9,
+          85.3,
+          296.6,
+          140.3
+        ]
+      },
+      {
         "label": "bird",
         "category": "Animals",
+        "score": 0.553,
         "bbox": [
           16.7,
           142.1,
@@ -26383,16 +26436,18 @@
       {
         "label": "tree",
         "category": "Nature & Outdoor Features",
+        "score": 0.306,
         "bbox": [
           340.4,
           10.6,
           592.4,
-          581
+          581.0
         ]
       },
       {
         "label": "tree",
         "category": "Nature & Outdoor Features",
+        "score": 0.264,
         "bbox": [
           636.4,
           106.9,
@@ -26403,16 +26458,18 @@
       {
         "label": "flag",
         "category": "Miscellaneous",
+        "score": 0.287,
         "bbox": [
           628.4,
           702.8,
           642.3,
-          723
+          723.0
         ]
       },
       {
         "label": "sky",
         "category": "Nature & Outdoor Features",
+        "score": 0.284,
         "bbox": [
           4.3,
           673.9,
@@ -26423,6 +26480,7 @@
       {
         "label": "building",
         "category": "Buildings & Infrastructure",
+        "score": 0.298,
         "bbox": [
           618.8,
           687.9,
@@ -26433,6 +26491,7 @@
       {
         "label": "chimney",
         "category": "Buildings & Infrastructure",
+        "score": 0.297,
         "bbox": [
           757.8,
           753.3,
@@ -26443,6 +26502,7 @@
       {
         "label": "chimney",
         "category": "Buildings & Infrastructure",
+        "score": 0.575,
         "bbox": [
           228.8,
           732.9,
@@ -26453,26 +26513,29 @@
       {
         "label": "chimney",
         "category": "Buildings & Infrastructure",
+        "score": 0.336,
         "bbox": [
           390.5,
           778.8,
           409.7,
-          800
+          800.0
         ]
       },
       {
         "label": "building",
         "category": "Buildings & Infrastructure",
+        "score": 0.403,
         "bbox": [
           10.9,
           732.8,
           154.4,
-          1107
+          1107.0
         ]
       },
       {
         "label": "building",
         "category": "Buildings & Infrastructure",
+        "score": 0.341,
         "bbox": [
           728.9,
           754.5,
@@ -26483,9 +26546,10 @@
       {
         "label": "building",
         "category": "Buildings & Infrastructure",
+        "score": 0.285,
         "bbox": [
-          359,
-          780,
+          359.0,
+          780.0,
           494.1,
           969.1
         ]
@@ -26493,6 +26557,7 @@
       {
         "label": "window",
         "category": "Buildings & Infrastructure",
+        "score": 0.398,
         "bbox": [
           752.4,
           821.6,
@@ -26503,6 +26568,7 @@
       {
         "label": "window",
         "category": "Buildings & Infrastructure",
+        "score": 0.417,
         "bbox": [
           817.5,
           823.8,
@@ -26513,6 +26579,7 @@
       {
         "label": "house",
         "category": "Buildings & Infrastructure",
+        "score": 0.251,
         "bbox": [
           235.4,
           819.2,
@@ -26523,6 +26590,7 @@
       {
         "label": "window",
         "category": "Buildings & Infrastructure",
+        "score": 0.361,
         "bbox": [
           380.2,
           847.6,
@@ -26533,6 +26601,7 @@
       {
         "label": "building",
         "category": "Buildings & Infrastructure",
+        "score": 0.263,
         "bbox": [
           537.3,
           807.5,
@@ -26543,6 +26612,7 @@
       {
         "label": "window",
         "category": "Buildings & Infrastructure",
+        "score": 0.378,
         "bbox": [
           92.1,
           847.3,
@@ -26553,6 +26623,7 @@
       {
         "label": "window",
         "category": "Buildings & Infrastructure",
+        "score": 0.346,
         "bbox": [
           425.4,
           847.6,
@@ -26563,6 +26634,7 @@
       {
         "label": "window",
         "category": "Buildings & Infrastructure",
+        "score": 0.358,
         "bbox": [
           587.6,
           862.2,
@@ -26573,6 +26645,7 @@
       {
         "label": "window",
         "category": "Buildings & Infrastructure",
+        "score": 0.343,
         "bbox": [
           595.1,
           862.9,
@@ -26583,28 +26656,31 @@
       {
         "label": "window",
         "category": "Buildings & Infrastructure",
+        "score": 0.252,
         "bbox": [
           262.3,
           883.8,
-          271,
+          271.0,
           905.6
         ]
       },
       {
         "label": "window",
         "category": "Buildings & Infrastructure",
+        "score": 0.417,
         "bbox": [
           752.8,
           874.1,
-          768,
+          768.0,
           905.1
         ]
       },
       {
         "label": "window",
         "category": "Buildings & Infrastructure",
+        "score": 0.265,
         "bbox": [
-          819,
+          819.0,
           881.2,
           830.6,
           908.5
@@ -26613,6 +26689,7 @@
       {
         "label": "barracks",
         "category": "Buildings & Infrastructure",
+        "score": 0.266,
         "bbox": [
           6.5,
           712.1,
@@ -26623,26 +26700,29 @@
       {
         "label": "door",
         "category": "Buildings & Infrastructure",
+        "score": 0.262,
         "bbox": [
           450.8,
           930.7,
-          466,
-          966
+          466.0,
+          966.0
         ]
       },
       {
         "label": "nazi symbol",
         "category": "Symbols & Identification",
+        "score": 0.263,
         "bbox": [
           836.2,
-          939,
-          852,
-          968
+          939.0,
+          852.0,
+          968.0
         ]
       },
       {
         "label": "bird",
         "category": "Animals",
+        "score": 0.251,
         "bbox": [
           294.9,
           982.8,
@@ -26653,16 +26733,18 @@
       {
         "label": "bird",
         "category": "Animals",
+        "score": 0.255,
         "bbox": [
           332.4,
           981.8,
-          344,
+          344.0,
           990.6
         ]
       },
       {
         "label": "hat",
         "category": "People & Clothing",
+        "score": 0.385,
         "bbox": [
           470.4,
           995.3,
@@ -26673,6 +26755,7 @@
       {
         "label": "nazi flag",
         "category": "Symbols & Identification",
+        "score": 0.31,
         "bbox": [
           373.5,
           988.4,
@@ -26683,6 +26766,7 @@
       {
         "label": "door",
         "category": "Buildings & Infrastructure",
+        "score": 0.27,
         "bbox": [
           34.6,
           994.6,
@@ -26693,16 +26777,18 @@
       {
         "label": "bird",
         "category": "Animals",
+        "score": 0.272,
         "bbox": [
-          342,
+          342.0,
           1013.1,
           352.7,
-          1021
+          1021.0
         ]
       },
       {
         "label": "bird",
         "category": "Animals",
+        "score": 0.264,
         "bbox": [
           377.1,
           1000.1,
@@ -26713,16 +26799,18 @@
       {
         "label": "nazi flag",
         "category": "Symbols & Identification",
+        "score": 0.267,
         "bbox": [
           576.1,
           991.2,
-          670,
+          670.0,
           1055.2
         ]
       },
       {
         "label": "nazi flag",
         "category": "Symbols & Identification",
+        "score": 0.275,
         "bbox": [
           574.3,
           993.1,
@@ -26733,8 +26821,9 @@
       {
         "label": "vehicle",
         "category": "Vehicles & Transport",
+        "score": 0.488,
         "bbox": [
-          726,
+          726.0,
           990.9,
           855.9,
           1042.3
@@ -26743,9 +26832,10 @@
       {
         "label": "man",
         "category": "People & Clothing",
+        "score": 0.295,
         "bbox": [
           459.1,
-          997,
+          997.0,
           510.6,
           1056.9
         ]
@@ -26753,6 +26843,7 @@
       {
         "label": "nazi flag",
         "category": "Symbols & Identification",
+        "score": 0.275,
         "bbox": [
           296.3,
           1021.6,
@@ -26763,16 +26854,18 @@
       {
         "label": "bicycle",
         "category": "Vehicles & Transport",
+        "score": 0.468,
         "bbox": [
           443.8,
           1019.1,
-          525,
+          525.0,
           1066.2
         ]
       },
       {
         "label": "nazi flag",
         "category": "Symbols & Identification",
+        "score": 0.281,
         "bbox": [
           502.4,
           991.7,
@@ -26783,6 +26876,7 @@
       {
         "label": "road",
         "category": "Nature & Outdoor Features",
+        "score": 0.395,
         "bbox": [
           14.2,
           933.8,
@@ -26793,6 +26887,7 @@
       {
         "label": "bird",
         "category": "Animals",
+        "score": 0.325,
         "bbox": [
           434.7,
           1091.4,
@@ -26803,16 +26898,18 @@
       {
         "label": "bird",
         "category": "Animals",
+        "score": 0.31,
         "bbox": [
           524.5,
           1080.5,
-          539,
+          539.0,
           1091.9
         ]
       },
       {
         "label": "road",
         "category": "Nature & Outdoor Features",
+        "score": 0.309,
         "bbox": [
           592.8,
           964.6,
@@ -26823,6 +26920,7 @@
       {
         "label": "bird",
         "category": "Animals",
+        "score": 0.316,
         "bbox": [
           587.4,
           1112.6,
@@ -26833,6 +26931,7 @@
       {
         "label": "bird",
         "category": "Animals",
+        "score": 0.275,
         "bbox": [
           499.4,
           1138.5,
