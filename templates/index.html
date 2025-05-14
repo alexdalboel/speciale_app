@@ -31,7 +31,7 @@
     </div>
     <div class="pagination">
       {% if page > 1 %}
-        <a class="page-link" href="{{ url_for('index', page=page-1, class=filter_class) }}">&lt; Previous</a>
+        <a class="page-link" href="{{ url_for('index', page=page-1, class=filter_class, label=filter_label, year=filter_year, artist=filter_artist, database=filter_database, location=filter_location) }}">&lt; Previous</a>
       {% else %}
         <span class="page-link disabled">&lt; Previous</span>
       {% endif %}
@@ -39,13 +39,13 @@
         {% if p == page %}
           <span class="page-link active">{{ p }}</span>
         {% elif p == 1 or p == total_pages or (p >= page-1 and p <= page+1) %}
-          <a class="page-link" href="{{ url_for('index', page=p, class=filter_class) }}">{{ p }}</a>
+          <a class="page-link" href="{{ url_for('index', page=p, class=filter_class, label=filter_label, year=filter_year, artist=filter_artist, database=filter_database, location=filter_location) }}">{{ p }}</a>
         {% elif p == page-2 or p == page+2 %}
           <span class="page-link">...</span>
         {% endif %}
       {% endfor %}
       {% if page < total_pages %}
-        <a class="page-link" href="{{ url_for('index', page=page+1, class=filter_class) }}">Next &gt;</a>
+        <a class="page-link" href="{{ url_for('index', page=page+1, class=filter_class, label=filter_label, year=filter_year, artist=filter_artist, database=filter_database, location=filter_location) }}">Next &gt;</a>
       {% else %}
         <span class="page-link disabled">Next &gt;</span>
       {% endif %}
@@ -65,6 +65,57 @@
         {% endfor %}
       </select>
     </div>
+
+    <div class="class-filter">
+      <div class="filter-label">Label Filter</div>
+      <select id="label-filter-select">
+        <option value="all">All Labels</option>
+        {% for label in unique_labels %}
+          <option value="{{ label }}">{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="class-filter">
+      <div class="filter-label">Year Filter</div>
+      <select id="year-filter-select">
+        <option value="all">All Years</option>
+        {% for year in unique_years %}
+          <option value="{{ year }}">{{ year }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="class-filter">
+      <div class="filter-label">Artist Filter</div>
+      <select id="artist-filter-select">
+        <option value="all">All Artists</option>
+        {% for artist in unique_artists %}
+          <option value="{{ artist }}">{{ artist }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="class-filter">
+      <div class="filter-label">Database Filter</div>
+      <select id="database-filter-select">
+        <option value="all">All Databases</option>
+        {% for database in unique_databases %}
+          <option value="{{ database }}">{{ database }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="class-filter">
+      <div class="filter-label">Location Filter</div>
+      <select id="location-filter-select">
+        <option value="all">All Locations</option>
+        {% for location in unique_locations %}
+          <option value="{{ location }}">{{ location }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
     <div class="bbox-visibility-toggle" style="margin-top:1.5em; width:100%; text-align:center;">
       <label style="font-size:1rem; cursor:pointer;">
         <input type="checkbox" id="toggle-bbox-visibility" checked style="margin-right:0.5em; vertical-align:middle;"> Show Bounding Boxes
