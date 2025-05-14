@@ -1,3 +1,46 @@
+// Theme variables
+:root {
+  --bg-color: #ffffff;
+  --text-color: #222222;
+  --sidebar-bg: #f7f7f9;
+  --sidebar-text: #222222;
+  --card-bg: #ffffff;
+  --card-shadow: rgba(0, 0, 0, 0.1);
+  --border-color: #e0e0e0;
+  --hover-bg: #ececec;
+  --modal-bg: #fff;
+  --modal-text: #222222;
+}
+
+[data-theme="dark"] {
+  --bg-color: #1a1a1a;
+  --text-color: #ffffff;
+  --sidebar-bg: #2d3033;
+  --sidebar-text: #ffffff;
+  --card-bg: #2d3033;
+  --card-shadow: rgba(0, 0, 0, 0.3);
+  --border-color: #404040;
+  --hover-bg: #404040;
+  --modal-bg: rgba(26, 26, 26, 0.95);
+  --modal-text: #ffffff;
+}
+
+// Invert logo in light mode
+[data-theme="light"] .navbar-brand img {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+// Modal styles use variables
+#imageModal,
+#imageModal .modal-content,
+#imageModal div,
+#imageModal span,
+#imageModal button {
+  background: var(--modal-bg) !important;
+  color: var(--modal-text) !important;
+  border-color: var(--border-color) !important;
+}
+
 $primary: #000000;
 $secondary: #818181;
 $light: rgba(255, 255, 255, 0.5);
@@ -8,11 +51,57 @@ $navbar-light-brand-color: $secondary;
 $navbar-light-brand-hover-color: $secondary;
 $nav-link-font-size: 16px;
 $nav-nav-color: #b52020;
+$sidebar-bg-color: #2d3033;
 
 * {
   box-sizing: border-box;
 }
 
+// Base Layout
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+// Main Navbar Styles
+body > .navbar {
+  transition: transform 0.3s ease-in-out;
+  
+  &.hidden {
+    transform: translateY(-100%);
+  }
+}
+
+.navbar-toggle-btn {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 1000;
+  background: #6c757d;
+  border: none;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background: #5a6268;
+  }
+}
+
+// Logo Styles
+.navbar-brand img {
+  max-height: 50px;
+  width: auto;
+  display: inline-block;
+}
+
+// Main Layout
 .main-layout {
   display: flex;
   height: 80vh;
@@ -25,6 +114,7 @@ $nav-nav-color: #b52020;
   }
 }
 
+// Objects Panel
 .objects-panel {
   width: 180px;
   background: #fff;
@@ -106,6 +196,7 @@ $nav-nav-color: #b52020;
   }
 }
 
+// Canvas Section
 .canvas-section {
   flex: 1;
   display: flex;
@@ -191,6 +282,7 @@ $nav-nav-color: #b52020;
   }
 }
 
+// Tools Panel
 .tools-panel {
   width: 220px;
   background: #fff;
@@ -222,7 +314,6 @@ $nav-nav-color: #b52020;
 
       &.hand {
         background: url('/static/icons/square.svg') no-repeat center/contain;
-        
         border: 2px solid #bbb;
       }
 
@@ -252,8 +343,301 @@ $nav-nav-color: #b52020;
   }
 }
 
-@import 'node_modules/bootstrap/scss/bootstrap';
+// Visitor Gallery Styles
+.visitor-page {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+  background: var(--bg-color);
 
+  .sidebar {
+    width: 300px;
+    background-color: var(--sidebar-bg);
+    border-right: 1px solid var(--border-color);
+    height: 100%;
+    transition: all 0.3s;
+    z-index: 1000;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    color: var(--sidebar-text);
+
+    &.collapsed {
+      width: 50px;
+      .sidebar-content,
+      #paginationContainer,
+      #resetFiltersBtn,
+      .navbar-brand {
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.2s, visibility 0.2s;
+      }
+      .sidebar-header {
+        background: none;
+        border-bottom: none;
+        justify-content: center;
+        padding: 0;
+        height: 100vh;
+        flex-direction: column;
+      }
+      .sidebar-title {
+        display: none;
+      }
+      .toggle-btn {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        margin: auto;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 0;
+        background: transparent;
+        border: none;
+        color: #b0b0b0;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 1.5rem;
+        &:hover {
+          color: #e0e0e0;
+        }
+      }
+    }
+
+    .sidebar-header {
+      height: 60px;
+      min-height: 60px;
+      max-height: 60px;
+      padding: 15px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--sidebar-bg);
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      transition: all 0.3s;
+      .navbar-brand {
+        transition: opacity 0.2s, visibility 0.2s;
+      }
+      .toggle-btn {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: transparent;
+        border: none;
+        color: var(--sidebar-text);
+        padding: 5px;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        &:hover {
+          color: #4CAF50;
+        }
+      }
+    }
+
+    .sidebar-title {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: #495057;
+      transition: opacity 0.2s;
+    }
+
+    .toggle-btn {
+      background: transparent;
+      border: none;
+      color: #6c757d;
+      padding: 5px;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+
+      &:hover {
+        color: #495057;
+      }
+    }
+
+    .sidebar-content {
+      padding: 20px;
+      width: 300px;
+      height: calc(100% - 60px - 90px);
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
+      flex-shrink: 1;
+      min-height: 0;
+      overflow-y: auto;
+      transition: opacity 0.2s, visibility 0.2s;
+
+      > * {
+        flex-shrink: 1;
+        min-height: 0;
+      }
+    }
+  }
+
+  .filter-section {
+    margin-bottom: 1rem;
+
+    h5 {
+      margin-bottom: 0.5rem;
+      color: var(--sidebar-text);
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+
+    .form-select {
+      width: 100%;
+      margin-bottom: 1rem;
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-color);
+      font-size: 0.9rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: 4px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+
+      &:hover, &:focus {
+        background-color: var(--hover-bg);
+        color: var(--text-color);
+      }
+
+      option {
+        background-color: var(--card-bg);
+        color: var(--text-color);
+      }
+    }
+  }
+
+  .gallery-viewport {
+    flex: 1;
+    background-color: var(--bg-color);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  #panzoom-container {
+    width: 100%;
+    height: 100%;
+  }
+
+  .gallery-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    overflow: hidden;
+    touch-action: none;
+  }
+
+  .artwork-item-container {
+    margin: 0;
+    overflow: hidden;
+    background-color: var(--card-bg);
+    box-shadow: 0 4px 16px var(--card-shadow);
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .artwork-item {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  #resetViewBtn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 10;
+  }
+
+  #panzoom-debug {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    color: #fff;
+    background: rgba(0,0,0,0.5);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    z-index: 10;
+  }
+
+  #paginationContainer {
+    flex-shrink: 0;
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    text-align: center;
+    margin: 16px 16px 24px 16px;
+    padding: 15px;
+    background-color: var(--card-bg);
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    border: 1px solid var(--border-color);
+
+    button {
+      padding: 8px 16px;
+      background-color: var(--card-bg);
+      color: var(--text-color);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s;
+
+      &:hover:not(:disabled) {
+        background-color: var(--hover-bg);
+      }
+
+      &:disabled {
+        background-color: var(--card-bg);
+        color: #aaa;
+        cursor: not-allowed;
+      }
+    }
+
+    span {
+      font-size: 14px;
+      font-weight: 500;
+      color: #e0e0e0;
+    }
+  }
+}
+
+// Modal and Popup Styles
 .bbox-modal {
   position: fixed;
   z-index: 1000;
@@ -263,6 +647,7 @@ $nav-nav-color: #b52020;
   align-items: center;
   justify-content: center;
 }
+
 .bbox-modal-content {
   background: #fff;
   padding: 2em;
@@ -271,6 +656,7 @@ $nav-nav-color: #b52020;
   box-shadow: 0 4px 32px rgba(0,0,0,0.2);
   position: relative;
 }
+
 .bbox-modal-close {
   position: absolute;
   right: 1em;
@@ -292,6 +678,7 @@ $nav-nav-color: #b52020;
   opacity: 0.9;
   pointer-events: auto;
 }
+
 .bbox .resize-handle.nw { top: -6px; left: -6px; cursor: nwse-resize; }
 .bbox .resize-handle.ne { top: -6px; right: -6px; cursor: nesw-resize; }
 .bbox .resize-handle.sw { bottom: -6px; left: -6px; cursor: nesw-resize; }
@@ -307,16 +694,19 @@ $nav-nav-color: #b52020;
   padding: 0.5em 0;
   font-size: 1rem;
 }
+
 .bbox-popup ul {
   list-style: none;
   margin: 0;
   padding: 0;
 }
+
 .bbox-popup li {
   padding: 0.5em 1.2em;
   cursor: pointer;
   transition: background 0.15s;
 }
+
 .bbox-popup li:hover {
   background: #e6f7ff;
 }
@@ -327,5 +717,109 @@ button {
     background: #e6f7ff;
     color: #222;
     border-color: #4CAF50;
+  }
+}
+
+@import 'node_modules/bootstrap/scss/bootstrap';
+
+#imageModal {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+#imageModal.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+// Theme toggle button
+.theme-toggle-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+  padding: 0 0.5rem;
+}
+
+.theme-toggle-btn {
+  background: none;
+  border: none;
+  color: var(--sidebar-text);
+  padding: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  &:hover {
+    background-color: var(--hover-bg);
+    color: #4CAF50;
+  }
+  
+  i {
+    font-size: 1.2rem;
+  }
+}
+
+// Theme-aware primary button for sidebar
+.visitor-page .btn-primary {
+  background-color: var(--sidebar-bg);
+  color: var(--sidebar-text);
+  border: 1.5px solid var(--border-color);
+  box-shadow: none;
+  transition: background 0.2s, color 0.2s, border 0.2s;
+
+  &:hover, &:focus, &.active {
+    background-color: var(--hover-bg);
+    color: var(--text-color);
+    border-color: var(--border-color);
+  }
+}
+
+.visitor-page .btn-outline-secondary {
+  background-color: var(--card-bg);
+  color: var(--text-color);
+  border: 1.5px solid var(--border-color);
+
+  &:hover, &:focus {
+    background-color: var(--hover-bg);
+    color: var(--text-color);
+    border-color: var(--border-color);
+  }
+}
+
+// Unified sidebar action button style
+.sidebar-action-btn {
+  background-color: var(--sidebar-bg);
+  color: var(--sidebar-text);
+  border: 1.5px solid var(--border-color);
+  box-shadow: none;
+  transition: background 0.2s, color 0.2s, border 0.2s;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25em;
+
+  &:hover, &:focus, &.active {
+    background-color: var(--hover-bg);
+    color: var(--text-color);
+    border-color: var(--border-color);
+  }
+
+  &:disabled {
+    background-color: var(--card-bg);
+    color: #aaa;
+    cursor: not-allowed;
+  }
+
+  i {
+    color: inherit;
+    font-size: 1.2em;
+    transition: color 0.2s;
   }
 }

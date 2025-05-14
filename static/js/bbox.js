@@ -114,6 +114,11 @@ window.addEventListener('DOMContentLoaded', function () {
     const bboxes = document.querySelectorAll('.bbox');
     const handButton = document.querySelector('.icon.hand');
     const classFilterSelect = document.getElementById('class-filter-select');
+    const labelFilterSelect = document.getElementById('label-filter-select');
+    const yearFilterSelect = document.getElementById('year-filter-select');
+    const artistFilterSelect = document.getElementById('artist-filter-select');
+    const databaseFilterSelect = document.getElementById('database-filter-select');
+    const locationFilterSelect = document.getElementById('location-filter-select');
     const imageContainer = img.parentElement;
     if (!img) return;
   
@@ -130,18 +135,39 @@ window.addEventListener('DOMContentLoaded', function () {
         window.allDetectionsData = data.reduce((acc, item) => {
           const detectionsWithImage = item.detections.map(detection => ({
             ...detection,
-            _image_file: item.image_file // Use _image_file for internal tracking only
+            _image_file: item.image_file, // Use _image_file for internal tracking only
+            _year: item.Year,
+            _artist: item.Artist,
+            _database: item.Database,
+            _location: item.Location
           }));
           return acc.concat(detectionsWithImage);
         }, []);
 
         // Store all unique categories from the complete dataset
         window.allCategories = new Set();
+        window.allLabels = new Set();
+        window.allYears = new Set();
+        window.allArtists = new Set();
+        window.allDatabases = new Set();
+        window.allLocations = new Set();
+
         window.allDetectionsData.forEach(detection => {
-          if (detection.category) {
-            window.allCategories.add(detection.category);
-          }
+          if (detection.category) window.allCategories.add(detection.category);
+          if (detection.label) window.allLabels.add(detection.label);
+          if (detection._year) window.allYears.add(detection._year);
+          if (detection._artist) window.allArtists.add(detection._artist);
+          if (detection._database) window.allDatabases.add(detection._database);
+          if (detection._location) window.allLocations.add(detection._location);
         });
+
+        // Populate filter dropdowns
+        populateFilterDropdown(classFilterSelect, Array.from(window.allCategories).sort());
+        populateFilterDropdown(labelFilterSelect, Array.from(window.allLabels).sort());
+        populateFilterDropdown(yearFilterSelect, Array.from(window.allYears).sort());
+        populateFilterDropdown(artistFilterSelect, Array.from(window.allArtists).sort());
+        populateFilterDropdown(databaseFilterSelect, Array.from(window.allDatabases).sort());
+        populateFilterDropdown(locationFilterSelect, Array.from(window.allLocations).sort());
 
         // Initialize bboxes with their categories from the data attributes
         bboxes.forEach(box => {
@@ -1691,5 +1717,155 @@ window.addEventListener('DOMContentLoaded', function () {
         alert('Failed to save changes. Please try again.');
       });
     });
-  });
+
+    // Function to populate filter dropdowns
+    function populateFilterDropdown(select, options) {
+      if (!select) return;
+      // Save current value
+      const prevValue = select.value;
+      // Remove all except 'All'
+      while (select.options.length > 1) {
+        select.remove(1);
+      }
+      // Add new options
+      options.forEach(opt => {
+        const option = document.createElement('option');
+        option.value = opt;
+        option.textContent = opt;
+        select.appendChild(option);
+      });
+      // Restore previous value if still valid
+      if (prevValue !== 'all' && options.includes(prevValue)) {
+        select.value = prevValue;
+      } else {
+        select.value = 'all';
+      }
+    }
+
+    // Function to handle filter changes
+    function handleFilterChange() {
+      const currentUrlParams = new URLSearchParams(window.location.search);
+      
+      // Get all filter values
+      const filters = {
+        class: classFilterSelect.value,
+        label: labelFilterSelect.value,
+        year: yearFilterSelect.value,
+        artist: artistFilterSelect.value,
+        database: databaseFilterSelect.value,
+        location: locationFilterSelect.value
+      };
+
+      // Update URL parameters
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value === 'all') {
+          currentUrlParams.delete(key);
+        } else {
+          currentUrlParams.set(key, value);
+        }
+      });
+
+      // Reset to first page when filtering
+      currentUrlParams.set('page', '1');
+      
+      // Save state before redirecting
+      saveCurrentState();
+      
+      // Update URL and reload page
+      window.location.href = `${window.location.pathname}?${currentUrlParams.toString()}`;
+    }
+
+    // Add event listeners for all filters
+    classFilterSelect.addEventListener('change', handleFilterChange);
+    labelFilterSelect.addEventListener('change', handleFilterChange);
+    yearFilterSelect.addEventListener('change', handleFilterChange);
+    artistFilterSelect.addEventListener('change', handleFilterChange);
+    databaseFilterSelect.addEventListener('change', handleFilterChange);
+    locationFilterSelect.addEventListener('change', handleFilterChange);
+
+    // Set current filter values from URL
+    const currentFilters = {
+      class: urlParams.get('class'),
+      label: urlParams.get('label'),
+      year: urlParams.get('year'),
+      artist: urlParams.get('artist'),
+      database: urlParams.get('database'),
+      location: urlParams.get('location')
+    };
+
+    // Set the current filter values in the dropdowns
+    Object.entries(currentFilters).forEach(([key, value]) => {
+      if (value) {
+        const select = document.getElementById(`${key}-filter-select`);
+        if (select) select.value = value;
+      }
+    });
+
+    // Add functions to save and restore state
+    function saveCurrentState() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const state = {
+            page: urlParams.get('page') || '1',
+            class: urlParams.get('class') || 'all',
+            label: urlParams.get('label') || 'all',
+            year: urlParams.get('year') || 'all',
+            artist: urlParams.get('artist') || 'all',
+            database: urlParams.get('database') || 'all',
+            location: urlParams.get('location') || 'all'
+        };
+        localStorage.setItem('annotationToolState', JSON.stringify(state));
+    }
+
+    function restoreState() {
+        const savedState = localStorage.getItem('annotationToolState');
+        if (savedState) {
+            const state = JSON.parse(savedState);
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            // Only restore if we're on the first page with no filters
+            if (urlParams.toString() === '') {
+                const newParams = new URLSearchParams();
+                Object.entries(state).forEach(([key, value]) => {
+                    if (value !== 'all') {
+                        newParams.set(key, value);
+                    }
+                });
+                if (newParams.toString()) {
+                    window.location.href = `${window.location.pathname}?${newParams.toString()}`;
+                }
+            }
+        }
+    }
+
+    // Call restoreState when the page loads
+    restoreState();
+
+    // Save state when pagination links are clicked
+    document.querySelectorAll('.page-link').forEach(link => {
+        if (link.href) {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const url = new URL(this.href);
+                const urlParams = new URLSearchParams(url.search);
+                
+                // Create state object
+                const state = {
+                    page: urlParams.get('page') || '1',
+                    class: urlParams.get('class') || 'all',
+                    label: urlParams.get('label') || 'all',
+                    year: urlParams.get('year') || 'all',
+                    artist: urlParams.get('artist') || 'all',
+                    database: urlParams.get('database') || 'all',
+                    location: urlParams.get('location') || 'all'
+                };
+                
+                // Save state
+                localStorage.setItem('annotationToolState', JSON.stringify(state));
+                
+                // Navigate to the new page
+                window.location.href = this.href;
+            });
+        }
+    });
+});
   
