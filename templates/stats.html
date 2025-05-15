@@ -3,25 +3,63 @@
 {% block title %}C.H.O.R.U.S.{% endblock %}
 
 {% block content %}
-<div class="container">
-  <div style="display: flex; flex-wrap: wrap; gap: 32px;">
-    <div style="flex: 2; min-width: 400px;">
-      <h3>Label Change Heatmap</h3>
-      <div id="label-change-heatmap" style="height:400px;"></div>
+<div class="container-fluid px-4" style="height: calc(100vh - 80px); display: flex; flex-direction: column;">
+  <div class="overall-stats" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 16px;">
+    <div class="stat-card" style="background: var(--card-bg); padding: 16px; border-radius: 12px; box-shadow: 0 4px 12px var(--card-shadow); transition: transform 0.2s, box-shadow 0.2s; border: 1px solid var(--border-color);">
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+        <div style="background: rgba(76, 175, 80, 0.1); padding: 8px; border-radius: 8px;">
+          <i class="fas fa-images" style="color: #4CAF50; font-size: 1.2rem;"></i>
+        </div>
+        <h4 style="margin: 0; color: var(--text-color); font-size: 0.9rem; font-weight: 500;">Total Images</h4>
+      </div>
+      <div id="total-images" style="font-size: 24px; font-weight: bold; color: #4CAF50; margin-left: 44px;">-</div>
     </div>
-    <div style="flex: 1; min-width: 300px;">
-      <h3>Correction Type Breakdown</h3>
-      <div id="correction-type-breakdown" style="height:300px;"></div>
+    <div class="stat-card" style="background: var(--card-bg); padding: 16px; border-radius: 12px; box-shadow: 0 4px 12px var(--card-shadow); transition: transform 0.2s, box-shadow 0.2s; border: 1px solid var(--border-color);">
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+        <div style="background: rgba(33, 150, 243, 0.1); padding: 8px; border-radius: 8px;">
+          <i class="fas fa-object-group" style="color: #2196F3; font-size: 1.2rem;"></i>
+        </div>
+        <h4 style="margin: 0; color: var(--text-color); font-size: 0.9rem; font-weight: 500;">Total Detections</h4>
+      </div>
+      <div id="total-detections" style="font-size: 24px; font-weight: bold; color: #2196F3; margin-left: 44px;">-</div>
+    </div>
+    <div class="stat-card" style="background: var(--card-bg); padding: 16px; border-radius: 12px; box-shadow: 0 4px 12px var(--card-shadow); transition: transform 0.2s, box-shadow 0.2s; border: 1px solid var(--border-color);">
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+        <div style="background: rgba(255, 152, 0, 0.1); padding: 8px; border-radius: 8px;">
+          <i class="fas fa-chart-line" style="color: #FF9800; font-size: 1.2rem;"></i>
+        </div>
+        <h4 style="margin: 0; color: var(--text-color); font-size: 0.9rem; font-weight: 500;">Avg Detections/Image</h4>
+      </div>
+      <div id="avg-detections" style="font-size: 24px; font-weight: bold; color: #FF9800; margin-left: 44px;">-</div>
+    </div>
+    <div class="stat-card" style="background: var(--card-bg); padding: 16px; border-radius: 12px; box-shadow: 0 4px 12px var(--card-shadow); transition: transform 0.2s, box-shadow 0.2s; border: 1px solid var(--border-color);">
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+        <div style="background: rgba(156, 39, 176, 0.1); padding: 8px; border-radius: 8px;">
+          <i class="fas fa-tags" style="color: #9C27B0; font-size: 1.2rem;"></i>
+        </div>
+        <h4 style="margin: 0; color: var(--text-color); font-size: 0.9rem; font-weight: 500;">Unique Labels</h4>
+      </div>
+      <div id="unique-labels" style="font-size: 24px; font-weight: bold; color: #9C27B0; margin-left: 44px;">-</div>
     </div>
   </div>
-  <div style="display: flex; flex-wrap: wrap; gap: 32px; margin-top: 32px;">
-    <div style="flex: 1; min-width: 400px;">
-      <h3>Most Frequently Added/Removed Labels</h3>
-      <div id="added-removed-labels" style="height:350px;"></div>
+  <div style="display: grid; grid-template-columns: 3fr 2fr 2fr; gap: 16px; flex: 1; min-height: 0; overflow: hidden;">
+    <div style="display: flex; flex-direction: column; min-height: 0; overflow: hidden;">
+      <h3 style="margin: 0 0 8px 0; font-size: 1rem;">Label Change Sankey Diagram</h3>
+      <div id="label-change-sankey" style="flex: 1; min-height: 0; overflow: hidden;"></div>
     </div>
-    <div style="flex: 1; min-width: 400px;">
-      <h3>Top Images with Most Corrections</h3>
-      <div id="top-images-corrections" style="height:350px;"></div>
+    <div style="display: flex; flex-direction: column; gap: 12px; min-height: 0; overflow: hidden; height: 100%;">
+      <div style="display: flex; flex-direction: column; min-height: 0; flex: 1 1 0; overflow: hidden;">
+        <h3 style="margin: 0 0 8px 0; font-size: 1rem;">Most Frequently Added/Removed Labels</h3>
+        <div id="added-removed-labels" style="flex: 1 1 0; min-height: 0; overflow: hidden;"></div>
+      </div>
+      <div style="display: flex; flex-direction: column; min-height: 0; flex: 1 1 0; overflow: hidden;">
+        <h3 style="margin: 0 0 8px 0; font-size: 1rem;">Top Images with Most Corrections</h3>
+        <div id="top-images-corrections" style="flex: 1 1 0; min-height: 0; overflow: hidden;"></div>
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: column; min-height: 0; overflow: hidden; align-items: center;">
+      <h3 style="margin: 0 0 8px 0; font-size: 1rem;">Correction Type Breakdown</h3>
+      <div id="correction-type-breakdown" style="flex: 1; min-height: 0; max-height: 500px; width: 100%; max-width: 500px; overflow: hidden;"></div>
     </div>
   </div>
 </div>

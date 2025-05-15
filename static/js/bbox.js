@@ -696,6 +696,103 @@ window.addEventListener('DOMContentLoaded', function () {
       applyBtn.style.display = 'block';
     };
   
+    // Function to handle cleanup and reinitialization after deletion
+    function cleanupAndReinitialize() {
+      console.log('Delete handler: Updating filter dropdowns');
+      populateFilterDropdowns();
+      
+      console.log('Delete handler: Reinitializing event listeners');
+      
+      // Reinitialize object button event listeners
+      document.querySelectorAll('.object-btn').forEach(btn => {
+        const newBtn = btn.cloneNode(true);
+        btn.parentNode.replaceChild(newBtn, btn);
+        newBtn.addEventListener('click', (e) => handleButtonClick(e, newBtn));
+
+        // Add hover effects
+        newBtn.addEventListener('mouseenter', function() {
+          const idx = newBtn.getAttribute('data-idx');
+          document.querySelectorAll('.bbox').forEach(box => {
+            if (box.getAttribute('data-idx') === idx) {
+              box.classList.add('highlight');
+              if (!isMultiSelectMode || selectedBoxes.has(idx)) {
+                box.classList.remove('fade');
+              }
+            } else {
+              if (!isMultiSelectMode || !selectedBoxes.has(box.getAttribute('data-idx'))) {
+                box.classList.remove('highlight');
+                box.classList.add('fade');
+              }
+            }
+          });
+        });
+
+        newBtn.addEventListener('mouseleave', function() {
+          document.querySelectorAll('.bbox').forEach(box => {
+            const idx = box.getAttribute('data-idx');
+            if (!isMultiSelectMode || !selectedBoxes.has(idx)) {
+              box.classList.remove('highlight');
+              box.classList.remove('fade');
+            }
+          });
+        });
+      });
+
+      // Reinitialize filter event listeners
+      const filterSelects = [
+        'class-filter-select',
+        'label-filter-select',
+        'year-filter-select',
+        'artist-filter-select',
+        'database-filter-select',
+        'location-filter-select'
+      ];
+
+      filterSelects.forEach(selectId => {
+        const select = document.getElementById(selectId);
+        if (select) {
+          select.addEventListener('change', () => {
+            populateFilterDropdowns();
+            handleFilterChange();
+          });
+        }
+      });
+
+      // Reinitialize pagination event listeners
+      document.querySelectorAll('.page-link').forEach(link => {
+        if (link.href) {
+          link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const url = new URL(this.href);
+            const urlParams = new URLSearchParams(url.search);
+            
+            // Create state object
+            const state = {
+              page: urlParams.get('page') || '1',
+              class: urlParams.get('class') || 'all',
+              label: urlParams.get('label') || 'all',
+              year: urlParams.get('year') || 'all',
+              artist: urlParams.get('artist') || 'all',
+              database: urlParams.get('database') || 'all',
+              location: urlParams.get('location') || 'all'
+            };
+            
+            // Save state
+            localStorage.setItem('annotationToolState', JSON.stringify(state));
+            
+            // Navigate to the new page
+            window.location.href = this.href;
+          });
+        }
+      });
+
+      // Update boxes positions
+      updateBoxes();
+      
+      console.log('Delete handler: Page update complete');
+    }
+
+    // Update popupDelete.onclick to use cleanupAndReinitialize
     popupDelete.onclick = function () {
       popup.style.display = 'none';
       if (!activeBox) return;
@@ -790,6 +887,8 @@ window.addEventListener('DOMContentLoaded', function () {
         }
         // Update stats after successful deletion
         updateStats();
+        // Clean up and reinitialize
+        cleanupAndReinitialize();
       }).catch(error => {
         console.error('Error updating detections:', error);
         alert('Failed to save changes. Please try again.');
@@ -1177,13 +1276,13 @@ window.addEventListener('DOMContentLoaded', function () {
 
     // Add class filter functionality
     classFilterSelect.addEventListener('change', function() {
-      const selectedClass = this.value;
+      const selectedCategory = this.value;
       const urlParams = new URLSearchParams(window.location.search);
       
-      if (selectedClass === 'all') {
+      if (selectedCategory === 'all') {
         urlParams.delete('class');
       } else {
-        urlParams.set('class', selectedClass);
+        urlParams.set('class', selectedCategory);
       }
       urlParams.set('page', '1'); // Reset to first page when filtering
       
@@ -1712,6 +1811,8 @@ window.addEventListener('DOMContentLoaded', function () {
         updateStats();
         // Exit multi-select mode
         multiSelectBtn.click();
+        // Clean up and reinitialize
+        cleanupAndReinitialize();
       }).catch(error => {
         console.error('Error updating detections:', error);
         alert('Failed to save changes. Please try again.');
@@ -1721,12 +1822,15 @@ window.addEventListener('DOMContentLoaded', function () {
     // Function to populate filter dropdowns
     function populateFilterDropdown(select, options) {
       if (!select) return;
+      
       // Save current value
       const prevValue = select.value;
+      
       // Remove all except 'All'
       while (select.options.length > 1) {
         select.remove(1);
       }
+      
       // Add new options
       options.forEach(opt => {
         const option = document.createElement('option');
@@ -1734,6 +1838,7 @@ window.addEventListener('DOMContentLoaded', function () {
         option.textContent = opt;
         select.appendChild(option);
       });
+      
       // Restore previous value if still valid
       if (prevValue !== 'all' && options.includes(prevValue)) {
         select.value = prevValue;
@@ -1742,19 +1847,22 @@ window.addEventListener('DOMContentLoaded', function () {
       }
     }
 
+    // Function to get current filter values
+    function getCurrentFilterValues() {
+      return {
+        class: classFilterSelect ? classFilterSelect.value : 'all',
+        label: labelFilterSelect ? labelFilterSelect.value : 'all',
+        year: yearFilterSelect ? yearFilterSelect.value : 'all',
+        artist: artistFilterSelect ? artistFilterSelect.value : 'all',
+        database: databaseFilterSelect ? databaseFilterSelect.value : 'all',
+        location: locationFilterSelect ? locationFilterSelect.value : 'all'
+      };
+    }
+
     // Function to handle filter changes
     function handleFilterChange() {
       const currentUrlParams = new URLSearchParams(window.location.search);
-      
-      // Get all filter values
-      const filters = {
-        class: classFilterSelect.value,
-        label: labelFilterSelect.value,
-        year: yearFilterSelect.value,
-        artist: artistFilterSelect.value,
-        database: databaseFilterSelect.value,
-        location: locationFilterSelect.value
-      };
+      const filters = getCurrentFilterValues();
 
       // Update URL parameters
       Object.entries(filters).forEach(([key, value]) => {
@@ -1771,33 +1879,58 @@ window.addEventListener('DOMContentLoaded', function () {
       // Save state before redirecting
       saveCurrentState();
       
-      // Update URL and reload page
+      // Update URL and reload page to get filtered data from server
       window.location.href = `${window.location.pathname}?${currentUrlParams.toString()}`;
     }
 
     // Add event listeners for all filters
-    classFilterSelect.addEventListener('change', handleFilterChange);
-    labelFilterSelect.addEventListener('change', handleFilterChange);
-    yearFilterSelect.addEventListener('change', handleFilterChange);
-    artistFilterSelect.addEventListener('change', handleFilterChange);
-    databaseFilterSelect.addEventListener('change', handleFilterChange);
-    locationFilterSelect.addEventListener('change', handleFilterChange);
+    [classFilterSelect, labelFilterSelect, yearFilterSelect, 
+     artistFilterSelect, databaseFilterSelect, locationFilterSelect].forEach(select => {
+      if (select) {
+        select.addEventListener('change', handleFilterChange);
+      }
+    });
 
-    // Set current filter values from URL
-    const currentFilters = {
-      class: urlParams.get('class'),
-      label: urlParams.get('label'),
-      year: urlParams.get('year'),
-      artist: urlParams.get('artist'),
-      database: urlParams.get('database'),
-      location: urlParams.get('location')
-    };
+    // Add Reset Filters button
+    const toolsPanel = document.querySelector('.tools-panel');
+    if (toolsPanel) {
+      const resetButton = document.createElement('button');
+      resetButton.textContent = 'Reset All Filters';
+      resetButton.style.cssText = `
+        width: 100%;
+        padding: 8px;
+        margin-top: 10px;
+        background: #f44336;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+      `;
+      resetButton.addEventListener('click', function() {
+        // Reset all dropdowns to 'all'
+        [classFilterSelect, labelFilterSelect, yearFilterSelect, 
+         artistFilterSelect, databaseFilterSelect, locationFilterSelect].forEach(select => {
+          if (select) {
+            select.value = 'all';
+          }
+        });
+        
+        // Clear URL parameters and reload
+        window.location.href = window.location.pathname;
+      });
+      toolsPanel.appendChild(resetButton);
+    }
 
-    // Set the current filter values in the dropdowns
-    Object.entries(currentFilters).forEach(([key, value]) => {
-      if (value) {
-        const select = document.getElementById(`${key}-filter-select`);
-        if (select) select.value = value;
+    // Set initial filter values from URL parameters
+    const currentUrlParams = new URLSearchParams(window.location.search);
+    const filters = ['class', 'label', 'year', 'artist', 'database', 'location'];
+    
+    filters.forEach(filter => {
+      const value = currentUrlParams.get(filter);
+      const select = document.getElementById(`${filter}-filter-select`);
+      if (select && value) {
+        select.value = value;
       }
     });
 

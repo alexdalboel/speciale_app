@@ -57,11 +57,11 @@
       <div class="icon hand"></div>
     </div>
     <div class="class-filter">
-      <div class="filter-label">Class Filter</div>
+      <div class="filter-label">Category Filter</div>
       <select id="class-filter-select">
-        <option value="all">All Classes</option>
-        {% for label in unique_labels %}
-          <option value="{{ label }}">{{ label }}</option>
+        <option value="all">All Categories</option>
+        {% for category in unique_categories %}
+          <option value="{{ category }}">{{ category }}</option>
         {% endfor %}
       </select>
     </div>

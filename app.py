@@ -52,8 +52,8 @@ def index():
             has_matching_detection = False
             for detection in image_data.get('detections', []):
                 label_match = filter_label == 'all' or detection['label'] == filter_label
-                class_match = filter_class == 'all' or detection['label'] == filter_class
-                if label_match and class_match:
+                category_match = filter_class == 'all' or detection.get('category') == filter_class
+                if label_match and category_match:
                     has_matching_detection = True
                     break
 
@@ -103,15 +103,18 @@ def index():
 
     # Get all unique values for filters
     all_labels = set()
+    all_categories = set()
     all_years = set()
     all_artists = set()
     all_databases = set()
     all_locations = set()
 
     for image_data in working_detections_data:
-        # Add labels from detections
+        # Add labels and categories from detections
         for detection in image_data.get('detections', []):
             all_labels.add(detection['label'])
+            if 'category' in detection:
+                all_categories.add(detection['category'])
         
         # Add metadata values
         if image_data.get('Year') and image_data.get('Year') != 'Unknown':
@@ -128,6 +131,7 @@ def index():
         image_file=image_file,
         labels=labels,
         unique_labels=sorted(list(all_labels)),
+        unique_categories=sorted(list(all_categories)),
         unique_years=sorted(list(all_years)),
         unique_artists=sorted(list(all_artists)),
         unique_databases=sorted(list(all_databases)),
