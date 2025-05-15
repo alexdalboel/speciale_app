@@ -153,6 +153,15 @@ def update_detections():
         data = request.json
         image_file = data['image_file']
         new_detections = data['detections']
+        current_page = int(request.args.get('page', 1))
+        
+        # Get all current filter parameters
+        filter_class = request.args.get('class', 'all')
+        filter_label = request.args.get('label', 'all')
+        filter_year = request.args.get('year', 'all')
+        filter_artist = request.args.get('artist', 'all')
+        filter_database = request.args.get('database', 'all')
+        filter_location = request.args.get('location', 'all')
         
         # Find the actual index of the image in the full dataset
         actual_index = None
@@ -171,7 +180,18 @@ def update_detections():
         with open(WORKING_PATH, 'w') as f:
             json.dump(working_detections_data, f, indent=2)
         
-        return jsonify({'success': True})
+        return jsonify({
+            'success': True,
+            'current_page': current_page,
+            'filters': {
+                'class': filter_class,
+                'label': filter_label,
+                'year': filter_year,
+                'artist': filter_artist,
+                'database': filter_database,
+                'location': filter_location
+            }
+        })
     except Exception as e:
         print(f"Error updating detections: {str(e)}")
         return jsonify({'success': False, 'error': str(e)}), 500

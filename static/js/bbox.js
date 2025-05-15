@@ -1,4 +1,6 @@
 window.addEventListener('DOMContentLoaded', function () {
+    console.log('DOM Content Loaded - Script starting');
+    
     // Add styles for resize handles and guidelines
     const style = document.createElement('style');
     style.textContent = `
@@ -14,6 +16,23 @@ window.addEventListener('DOMContentLoaded', function () {
       }
       .bbox.resizing {
         pointer-events: auto;
+      }
+      .bbox-label {
+        position: absolute;
+        top: -25px;
+        left: 0;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-size: 12px;
+        pointer-events: none;
+        z-index: 1000;
+        white-space: nowrap;
+        display: none;
+      }
+      .bbox.highlight .bbox-label {
+        display: block;
       }
       .resize-handle {
         position: absolute;
@@ -155,7 +174,12 @@ window.addEventListener('DOMContentLoaded', function () {
         window.allDetectionsData.forEach(detection => {
           if (detection.category) window.allCategories.add(detection.category);
           if (detection.label) window.allLabels.add(detection.label);
-          if (detection._year) window.allYears.add(detection._year);
+          if (detection._year) {
+            detection._year.split(',').forEach(y => {
+              const year = y.trim();
+              if (year) window.allYears.add(year);
+            });
+          }
           if (detection._artist) window.allArtists.add(detection._artist);
           if (detection._database) window.allDatabases.add(detection._database);
           if (detection._location) window.allLocations.add(detection._location);
@@ -164,7 +188,7 @@ window.addEventListener('DOMContentLoaded', function () {
         // Populate filter dropdowns
         populateFilterDropdown(classFilterSelect, Array.from(window.allCategories).sort());
         populateFilterDropdown(labelFilterSelect, Array.from(window.allLabels).sort());
-        populateFilterDropdown(yearFilterSelect, Array.from(window.allYears).sort());
+        populateFilterDropdown(yearFilterSelect, Array.from(window.allYears).sort((a, b) => a - b));
         populateFilterDropdown(artistFilterSelect, Array.from(window.allArtists).sort());
         populateFilterDropdown(databaseFilterSelect, Array.from(window.allDatabases).sort());
         populateFilterDropdown(locationFilterSelect, Array.from(window.allLocations).sort());
@@ -200,36 +224,30 @@ window.addEventListener('DOMContentLoaded', function () {
             // If no matching detection found, it's a user-added box
             box.classList.add('user-added');
           }
+
+          // Add label element to each box
+          const labelElement = document.createElement('div');
+          labelElement.className = 'bbox-label';
+          labelElement.textContent = box.title;
+          box.appendChild(labelElement);
         });
 
-        // Debug: Log final state of buttons
-        document.querySelectorAll('.object-btn').forEach(btn => {
-          btn.dataset.category = btn.dataset.category;
+        // Add event listeners for all filters
+        [classFilterSelect, labelFilterSelect, yearFilterSelect, 
+         artistFilterSelect, databaseFilterSelect, locationFilterSelect].forEach(select => {
+          if (select) {
+            select.addEventListener('change', handleFilterChange);
+          }
         });
+
+        // Initial population of filter dropdowns
+        if (window.allDetectionsData) {
+          populateAllFilterOptions();
+        }
       })
       .catch(error => {
         console.error('Error loading detections data:', error);
       });
-  
-    // Initialize bboxes with their categories from the data attributes
-    bboxes.forEach(box => {
-      const category = box.getAttribute('data-category');
-      if (category) {
-        box.dataset.category = category;
-        // Also update the corresponding button
-        const btn = document.querySelector(`.object-btn[data-idx="${box.dataset.idx}"]`);
-        if (btn) {
-          btn.dataset.category = category;
-        }
-      } else {
-        box.dataset.category = "Miscellaneous";
-        // Also update the corresponding button
-        const btn = document.querySelector(`.object-btn[data-idx="${box.dataset.idx}"]`);
-        if (btn) {
-          btn.dataset.category = "Miscellaneous";
-        }
-      }
-    });
   
     let isCreatingBox = false;
     let startX, startY;
@@ -345,11 +363,28 @@ window.addEventListener('DOMContentLoaded', function () {
     // Function to update the JSON data on the server
     async function updateJsonData() {
       try {
-        // Get current page from URL
+        console.log('Starting JSON update');
+        // Get current page and all filter parameters from URL
         const urlParams = new URLSearchParams(window.location.search);
         const page = urlParams.get('page') || '1';
         const currentImage = img.src.split('/').pop();
         const filterClass = urlParams.get('class');
+        const filterLabel = urlParams.get('label');
+        const filterYear = urlParams.get('year');
+        const filterArtist = urlParams.get('artist');
+        const filterDatabase = urlParams.get('database');
+        const filterLocation = urlParams.get('location');
+
+        console.log('Current state:', {
+          page,
+          image: currentImage,
+          filterClass,
+          filterLabel,
+          filterYear,
+          filterArtist,
+          filterDatabase,
+          filterLocation
+        });
 
         // Get all current boxes
         const detections = Array.from(document.querySelectorAll('.bbox')).map(box => ({
@@ -363,6 +398,8 @@ window.addEventListener('DOMContentLoaded', function () {
           ],
           is_user_added: box.classList.contains('user-added')
         }));
+
+        console.log('Current detections:', detections);
 
         // Update the current page's detections
         window.detectionsData = detections;
@@ -381,17 +418,18 @@ window.addEventListener('DOMContentLoaded', function () {
           window.allDetectionsData = window.allDetectionsData.concat(detectionsWithImage);
         }
 
-        // Update the allCategories set
-        if (!window.allCategories) {
-          window.allCategories = new Set();
-        }
-        detections.forEach(detection => {
-          if (detection.category) {
-            window.allCategories.add(detection.category);
-          }
-        });
+        // Build query parameters for the request
+        const queryParams = new URLSearchParams();
+        queryParams.set('page', page);
+        if (filterClass) queryParams.set('class', filterClass);
+        if (filterLabel) queryParams.set('label', filterLabel);
+        if (filterYear) queryParams.set('year', filterYear);
+        if (filterArtist) queryParams.set('artist', filterArtist);
+        if (filterDatabase) queryParams.set('database', filterDatabase);
+        if (filterLocation) queryParams.set('location', filterLocation);
 
-        const response = await fetch(`/update_detections?page=${page}`, {
+        console.log('Sending update to server...');
+        const response = await fetch(`/update_detections?${queryParams.toString()}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -407,18 +445,53 @@ window.addEventListener('DOMContentLoaded', function () {
           throw new Error(errorData.error || 'Failed to update detections');
         }
 
-        // If we're filtering by class, ensure we stay on a valid page
+        const result = await response.json();
+        console.log('Server response:', result);
+        
+        // Only redirect if we're filtering by class and this was the last instance of that class
         if (filterClass && filterClass !== 'all') {
-          const filteredDetections = detections.filter(d => d.label === filterClass);
+          const filteredDetections = detections.filter(d => d.category === filterClass);
           if (filteredDetections.length === 0) {
-            // If no detections left for this class, redirect to first page
-            window.location.href = `${window.location.pathname}?page=1&class=${filterClass}`;
+            // Preserve all filter parameters when redirecting
+            const newParams = new URLSearchParams();
+            newParams.set('page', '1');
+            if (filterClass) newParams.set('class', filterClass);
+            if (filterLabel) newParams.set('label', filterLabel);
+            if (filterYear) newParams.set('year', filterYear);
+            if (filterArtist) newParams.set('artist', filterArtist);
+            if (filterDatabase) newParams.set('database', filterDatabase);
+            if (filterLocation) newParams.set('location', filterLocation);
+            window.location.href = `${window.location.pathname}?${newParams.toString()}`;
             return;
           }
         }
 
         // Update stats after successful update
+        console.log('Updating stats...');
         updateStats();
+
+        // Save state with all current parameters
+        const state = {
+          page: page,
+          class: filterClass || 'all',
+          label: filterLabel || 'all',
+          year: filterYear || 'all',
+          artist: filterArtist || 'all',
+          database: filterDatabase || 'all',
+          location: filterLocation || 'all'
+        };
+        console.log('Saving state:', state);
+        localStorage.setItem('annotationToolState', JSON.stringify(state));
+
+        // Update filter dropdowns
+        console.log('Updating filter dropdowns...');
+        populateAllFilterOptions();
+
+        // Update boxes positions
+        console.log('Updating box positions...');
+        updateBoxes();
+
+        console.log('JSON update completed successfully');
       } catch (error) {
         console.error('Error updating detections:', error);
         alert('Failed to save changes. Please try again.');
@@ -658,6 +731,19 @@ window.addEventListener('DOMContentLoaded', function () {
     popupResize.onclick = function () {
       popup.style.display = 'none';
       if (!activeBox) return;
+
+      // Disable create box mode if it's active
+      if (isCreatingBox) {
+        isCreatingBox = false;
+        handButton.style.backgroundColor = '';
+        if (creatingBox) {
+          creatingBox.remove();
+          creatingBox = null;
+        }
+        removeGuidelines();
+        imageContainer.style.cursor = 'grab';
+      }
+
       addResizeHandles(activeBox);
       resizing = true;
       if (!applyBtn) {
@@ -699,7 +785,7 @@ window.addEventListener('DOMContentLoaded', function () {
     // Function to handle cleanup and reinitialization after deletion
     function cleanupAndReinitialize() {
       console.log('Delete handler: Updating filter dropdowns');
-      populateFilterDropdowns();
+      populateAllFilterOptions();
       
       console.log('Delete handler: Reinitializing event listeners');
       
@@ -752,7 +838,7 @@ window.addEventListener('DOMContentLoaded', function () {
         const select = document.getElementById(selectId);
         if (select) {
           select.addEventListener('change', () => {
-            populateFilterDropdowns();
+            populateAllFilterOptions();
             handleFilterChange();
           });
         }
@@ -794,105 +880,99 @@ window.addEventListener('DOMContentLoaded', function () {
 
     // Update popupDelete.onclick to use cleanupAndReinitialize
     popupDelete.onclick = function () {
-      popup.style.display = 'none';
-      if (!activeBox) return;
+        alert('Delete button clicked - check console');
+        console.log('Delete button clicked');
+        
+        try {
+            popup.style.display = 'none';
+            if (!activeBox) {
+                console.log('No active box to delete');
+                return;
+            }
 
-      // Get the specific box's data before removing it
-      const boxData = {
-        idx: activeBox.dataset.idx,
-        label: activeBox.title,
-        category: activeBox.dataset.category,
-        bbox: [
-          parseFloat(activeBox.dataset.x),
-          parseFloat(activeBox.dataset.y),
-          parseFloat(activeBox.dataset.x) + parseFloat(activeBox.dataset.w),
-          parseFloat(activeBox.dataset.y) + parseFloat(activeBox.dataset.h)
-        ]
-      };
+            // Get current page and filters from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const currentPage = urlParams.get('page') || '1';
+            console.log('Current page:', currentPage);
 
-      // Remove the box and button from DOM
-      const btn = document.querySelector(`.object-btn[data-idx="${activeBox.dataset.idx}"]`);
-      if (activeBox) activeBox.remove();
-      if (btn) btn.remove();
+            // Get the specific box's data before removing it
+            const boxData = {
+                idx: activeBox.dataset.idx,
+                label: activeBox.title,
+                category: activeBox.dataset.category
+            };
+            console.log('Deleting box:', boxData);
 
-      // Update indices of remaining boxes and buttons
-      const remainingBoxes = document.querySelectorAll('.bbox');
-      const remainingButtons = document.querySelectorAll('.object-btn');
-      
-      remainingBoxes.forEach((box, index) => {
-        box.dataset.idx = index.toString();
-      });
-      
-      remainingButtons.forEach((btn, index) => {
-        btn.dataset.idx = index.toString();
-      });
+            // Remove the box and button from DOM
+            const btn = document.querySelector(`.object-btn[data-idx="${activeBox.dataset.idx}"]`);
+            if (activeBox) activeBox.remove();
+            if (btn) btn.remove();
 
-      // Reset state
-      currentIdx = null;
-      activeBox = null;
+            // Update indices of remaining boxes and buttons
+            const remainingBoxes = document.querySelectorAll('.bbox');
+            const remainingButtons = document.querySelectorAll('.object-btn');
+            
+            console.log('Remaining boxes:', remainingBoxes.length);
+            console.log('Remaining buttons:', remainingButtons.length);
 
-      // Update JSON data
-      const detections = Array.from(remainingBoxes).map(box => ({
-        label: box.title,
-        category: box.dataset.category || "Miscellaneous",
-        bbox: [
-          parseFloat(box.dataset.x),
-          parseFloat(box.dataset.y),
-          parseFloat(box.dataset.x) + parseFloat(box.dataset.w),
-          parseFloat(box.dataset.y) + parseFloat(box.dataset.h)
-        ]
-      }));
+            // Update JSON data
+            const detections = Array.from(remainingBoxes).map(box => ({
+                label: box.title,
+                category: box.dataset.category || "Miscellaneous",
+                bbox: [
+                    parseFloat(box.dataset.x),
+                    parseFloat(box.dataset.y),
+                    parseFloat(box.dataset.x) + parseFloat(box.dataset.w),
+                    parseFloat(box.dataset.y) + parseFloat(box.dataset.h)
+                ]
+            }));
 
-      // Get current page and filter from URL
-      const urlParams = new URLSearchParams(window.location.search);
-      const page = urlParams.get('page') || '1';
-      const filterClass = urlParams.get('class');
+            console.log('Sending update to server...');
+            fetch(`/update_detections?page=${currentPage}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    image_file: img.src.split('/').pop(),
+                    detections: detections
+                })
+            })
+            .then(response => {
+                console.log('Server response received');
+                return response.json();
+            })
+            .then(data => {
+                console.log('Server data:', data);
+                // Update stats after successful deletion
+                updateStats();
+                
+                // Save state
+                const state = {
+                    page: currentPage,
+                    class: urlParams.get('class') || 'all',
+                    label: urlParams.get('label') || 'all',
+                    year: urlParams.get('year') || 'all',
+                    artist: urlParams.get('artist') || 'all',
+                    database: urlParams.get('database') || 'all',
+                    location: urlParams.get('location') || 'all'
+                };
+                console.log('Saving state:', state);
+                localStorage.setItem('annotationToolState', JSON.stringify(state));
 
-      // Update allDetectionsData by removing the deleted box
-      if (window.allDetectionsData) {
-        window.allDetectionsData = window.allDetectionsData.filter(detection => {
-          // Keep the detection if it's not from the current image
-          if (detection._image_file !== img.src.split('/').pop()) {
-            return true;
-          }
-          // For the current image, only keep detections that match the remaining boxes
-          return detections.some(d => 
-            d.label === detection.label &&
-            d.bbox[0] === detection.bbox[0] &&
-            d.bbox[1] === detection.bbox[1] &&
-            d.bbox[2] === detection.bbox[2] &&
-            d.bbox[3] === detection.bbox[3]
-          );
-        });
-      }
-
-      fetch(`/update_detections?page=${page}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          image_file: img.src.split('/').pop(),
-          detections: detections
-        })
-      }).then(() => {
-        // If we're filtering by class and this was the last instance of that class,
-        // redirect to the first page
-        if (filterClass && filterClass !== 'all') {
-          const remainingClassDetections = detections.filter(d => d.label === filterClass);
-          if (remainingClassDetections.length === 0) {
-            window.location.href = `${window.location.pathname}?page=1&class=${filterClass}`;
-            return;
-          }
+                // Update UI
+                populateAllFilterOptions();
+                updateBoxes();
+                console.log('Delete process completed');
+            })
+            .catch(error => {
+                console.error('Error in delete process:', error);
+                alert('Failed to save changes. Please try again.');
+            });
+        } catch (error) {
+            console.error('Error in delete handler:', error);
+            alert('An error occurred during deletion');
         }
-        // Update stats after successful deletion
-        updateStats();
-        // Clean up and reinitialize
-        cleanupAndReinitialize();
-      }).catch(error => {
-        console.error('Error updating detections:', error);
-        alert('Failed to save changes. Please try again.');
-      });
     };
 
     function addResizeHandles(bbox) {
@@ -998,6 +1078,8 @@ window.addEventListener('DOMContentLoaded', function () {
 
     // Function to create a new bounding box
     function createNewBox(x, y, width, height, label) {
+      console.log('Creating new box:', { x, y, width, height, label });
+      
       const container = imageContainer;
       const box = document.createElement('div');
       box.className = 'bbox user-added';
@@ -1009,9 +1091,11 @@ window.addEventListener('DOMContentLoaded', function () {
       
       // Get category for the label
       let category = getCategoryForLabel(label);
+      console.log('Category for label:', { label, category });
       
       // If no category exists for this label, show the category selection modal
       if (!category) {
+        console.log('No existing category found, showing category selection modal');
         const existingCategories = getExistingCategories();
         
         // Create a modal dialog for category selection
@@ -1056,6 +1140,7 @@ window.addEventListener('DOMContentLoaded', function () {
           const newCategory = prompt('Enter new category name:');
           if (newCategory && newCategory.trim()) {
             category = newCategory.trim();
+            console.log('New category created:', category);
             modal.remove();
             continueBoxCreation();
           }
@@ -1075,6 +1160,7 @@ window.addEventListener('DOMContentLoaded', function () {
           `;
           catBtn.onclick = () => {
             category = cat;
+            console.log('Existing category selected:', category);
             modal.remove();
             continueBoxCreation();
           };
@@ -1085,6 +1171,7 @@ window.addEventListener('DOMContentLoaded', function () {
         document.body.appendChild(modal);
       } else {
         // If category exists for this label, use it directly
+        console.log('Using existing category:', category);
         continueBoxCreation();
       }
 
@@ -1092,6 +1179,7 @@ window.addEventListener('DOMContentLoaded', function () {
       function continueBoxCreation() {
         if (!category) {
           category = "Miscellaneous"; // Fallback category if none selected
+          console.log('Using fallback category:', category);
         }
         box.dataset.category = category;
         
@@ -1099,6 +1187,7 @@ window.addEventListener('DOMContentLoaded', function () {
         const existingBoxes = document.querySelectorAll('.bbox');
         const nextIndex = existingBoxes.length;
         box.dataset.idx = nextIndex.toString();
+        console.log('New box index:', nextIndex);
         
         container.appendChild(box);
 
@@ -1110,6 +1199,7 @@ window.addEventListener('DOMContentLoaded', function () {
         btn.dataset.idx = nextIndex.toString();
         btn.dataset.category = category; // Set the category on the button
         objectsPanel.appendChild(btn);
+        console.log('Created new button:', { label, category, index: nextIndex });
 
         // Add event listeners to the new button
         btn.addEventListener('mouseenter', function () {
@@ -1149,6 +1239,7 @@ window.addEventListener('DOMContentLoaded', function () {
         });
 
         updateBoxes();
+        console.log('Updating JSON data after box creation');
         updateJsonData();
       }
     }
@@ -1339,9 +1430,11 @@ window.addEventListener('DOMContentLoaded', function () {
     imageContainer.addEventListener('mousedown', function(e) {
       if (!isCreatingBox) return;
       
+      console.log('Starting box creation');
       const coords = screenToImageCoords(e.clientX, e.clientY);
       startX = coords.x;
       startY = coords.y;
+      console.log('Start coordinates:', { x: startX, y: startY });
 
       creatingBox = document.createElement('div');
       creatingBox.className = 'creating-box';
@@ -1375,13 +1468,20 @@ window.addEventListener('DOMContentLoaded', function () {
         const left = Math.min(startX, currentCoords.x);
         const top = Math.min(startY, currentCoords.y);
 
+        console.log('Box creation completed:', { width, height, left, top });
+
         if (width > 10 && height > 10) {
           const label = prompt('Enter label for the new box:');
           if (label && label.trim() !== '') {
+            console.log('Creating box with label:', label);
             createNewBox(left, top, width, height, label);
             // Force an immediate update of all boxes
             updateBoxes();
+          } else {
+            console.log('Box creation cancelled - no label provided');
           }
+        } else {
+          console.log('Box creation cancelled - too small');
         }
 
         creatingBox.remove();
@@ -1801,6 +1901,7 @@ window.addEventListener('DOMContentLoaded', function () {
           detections: detections
         })
       }).then(() => {
+        // Only redirect if we're filtering by class and this was the last instance of that class
         if (filterClass && filterClass !== 'all') {
           const remainingClassDetections = detections.filter(d => d.label === filterClass);
           if (remainingClassDetections.length === 0) {
@@ -1808,9 +1909,8 @@ window.addEventListener('DOMContentLoaded', function () {
             return;
           }
         }
+        // Update stats after successful deletion
         updateStats();
-        // Exit multi-select mode
-        multiSelectBtn.click();
         // Clean up and reinitialize
         cleanupAndReinitialize();
       }).catch(error => {
@@ -1859,10 +1959,66 @@ window.addEventListener('DOMContentLoaded', function () {
       };
     }
 
+    // Function to populate all filter options based on current selections
+    function populateAllFilterOptions() {
+      if (!window.allDetectionsData) return;
+      
+      const filters = getCurrentFilterValues();
+      const filteredData = window.allDetectionsData.filter(detection => {
+        // Apply all filters except the one being updated
+        if (filters.year !== 'all') {
+          if (!detection._year || !detection._year.split(',').map(y => y.trim()).includes(filters.year)) {
+            return false;
+          }
+        }
+        if (filters.artist !== 'all' && detection._artist !== filters.artist) return false;
+        if (filters.database !== 'all' && detection._database !== filters.database) return false;
+        if (filters.location !== 'all' && detection._location !== filters.location) return false;
+        if (filters.class !== 'all' && detection.category !== filters.class) return false;
+        if (filters.label !== 'all' && detection.label !== filters.label) return false;
+        return true;
+      });
+
+      // Collect unique values for each filter type
+      const years = new Set();
+      const artists = new Set();
+      const databases = new Set();
+      const locations = new Set();
+      const categories = new Set();
+      const labels = new Set();
+
+      filteredData.forEach(detection => {
+        // --- FIX: split comma-separated years and add each individually ---
+        if (detection._year) {
+          detection._year.split(',').forEach(y => {
+            const year = y.trim();
+            if (year) years.add(year);
+          });
+        }
+        if (detection._artist) artists.add(detection._artist);
+        if (detection._database) databases.add(detection._database);
+        if (detection._location) locations.add(detection._location);
+        if (detection.category) categories.add(detection.category);
+        if (detection.label) labels.add(detection.label);
+      });
+
+      // Update dropdowns with filtered options
+      populateFilterDropdown(yearFilterSelect, Array.from(years).sort((a, b) => a - b));
+      populateFilterDropdown(artistFilterSelect, Array.from(artists).sort());
+      populateFilterDropdown(databaseFilterSelect, Array.from(databases).sort());
+      populateFilterDropdown(locationFilterSelect, Array.from(locations).sort());
+      populateFilterDropdown(classFilterSelect, Array.from(categories).sort());
+      populateFilterDropdown(labelFilterSelect, Array.from(labels).sort());
+    }
+
     // Function to handle filter changes
     function handleFilterChange() {
+      // Update all dropdowns based on current selections
+      populateAllFilterOptions();
+      
       const currentUrlParams = new URLSearchParams(window.location.search);
       const filters = getCurrentFilterValues();
+      const currentPage = currentUrlParams.get('page') || '1';
 
       // Update URL parameters
       Object.entries(filters).forEach(([key, value]) => {
@@ -1873,8 +2029,10 @@ window.addEventListener('DOMContentLoaded', function () {
         }
       });
 
-      // Reset to first page when filtering
-      currentUrlParams.set('page', '1');
+      // Only reset to first page when explicitly changing filters
+      if (!currentUrlParams.has('page')) {
+        currentUrlParams.set('page', currentPage);
+      }
       
       // Save state before redirecting
       saveCurrentState();
@@ -1890,6 +2048,11 @@ window.addEventListener('DOMContentLoaded', function () {
         select.addEventListener('change', handleFilterChange);
       }
     });
+
+    // Initial population of filter dropdowns
+    if (window.allDetectionsData) {
+      populateAllFilterOptions();
+    }
 
     // Add Reset Filters button
     const toolsPanel = document.querySelector('.tools-panel');
@@ -1916,7 +2079,10 @@ window.addEventListener('DOMContentLoaded', function () {
           }
         });
         
-        // Clear URL parameters and reload
+        // Clear localStorage state
+        localStorage.removeItem('annotationToolState');
+        
+        // Redirect to base URL without any parameters
         window.location.href = window.location.pathname;
       });
       toolsPanel.appendChild(resetButton);
@@ -1936,38 +2102,38 @@ window.addEventListener('DOMContentLoaded', function () {
 
     // Add functions to save and restore state
     function saveCurrentState() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const state = {
-            page: urlParams.get('page') || '1',
-            class: urlParams.get('class') || 'all',
-            label: urlParams.get('label') || 'all',
-            year: urlParams.get('year') || 'all',
-            artist: urlParams.get('artist') || 'all',
-            database: urlParams.get('database') || 'all',
-            location: urlParams.get('location') || 'all'
-        };
-        localStorage.setItem('annotationToolState', JSON.stringify(state));
+      const urlParams = new URLSearchParams(window.location.search);
+      const state = {
+        page: urlParams.get('page') || '1',
+        class: urlParams.get('class') || 'all',
+        label: urlParams.get('label') || 'all',
+        year: urlParams.get('year') || 'all',
+        artist: urlParams.get('artist') || 'all',
+        database: urlParams.get('database') || 'all',
+        location: urlParams.get('location') || 'all'
+      };
+      localStorage.setItem('annotationToolState', JSON.stringify(state));
     }
 
     function restoreState() {
-        const savedState = localStorage.getItem('annotationToolState');
-        if (savedState) {
-            const state = JSON.parse(savedState);
-            const urlParams = new URLSearchParams(window.location.search);
-            
-            // Only restore if we're on the first page with no filters
-            if (urlParams.toString() === '') {
-                const newParams = new URLSearchParams();
-                Object.entries(state).forEach(([key, value]) => {
-                    if (value !== 'all') {
-                        newParams.set(key, value);
-                    }
-                });
-                if (newParams.toString()) {
-                    window.location.href = `${window.location.pathname}?${newParams.toString()}`;
-                }
+      const savedState = localStorage.getItem('annotationToolState');
+      if (savedState) {
+        const state = JSON.parse(savedState);
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        // Only restore if we're on the first page with no filters
+        if (urlParams.toString() === '') {
+          const newParams = new URLSearchParams();
+          Object.entries(state).forEach(([key, value]) => {
+            if (value !== 'all') {
+              newParams.set(key, value);
             }
+          });
+          if (newParams.toString()) {
+            window.location.href = `${window.location.pathname}?${newParams.toString()}`;
+          }
         }
+      }
     }
 
     // Call restoreState when the page loads
@@ -1975,30 +2141,30 @@ window.addEventListener('DOMContentLoaded', function () {
 
     // Save state when pagination links are clicked
     document.querySelectorAll('.page-link').forEach(link => {
-        if (link.href) {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                const url = new URL(this.href);
-                const urlParams = new URLSearchParams(url.search);
-                
-                // Create state object
-                const state = {
-                    page: urlParams.get('page') || '1',
-                    class: urlParams.get('class') || 'all',
-                    label: urlParams.get('label') || 'all',
-                    year: urlParams.get('year') || 'all',
-                    artist: urlParams.get('artist') || 'all',
-                    database: urlParams.get('database') || 'all',
-                    location: urlParams.get('location') || 'all'
-                };
-                
-                // Save state
-                localStorage.setItem('annotationToolState', JSON.stringify(state));
-                
-                // Navigate to the new page
-                window.location.href = this.href;
-            });
-        }
+      if (link.href) {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          const url = new URL(this.href);
+          const urlParams = new URLSearchParams(url.search);
+          
+          // Create state object
+          const state = {
+            page: urlParams.get('page') || '1',
+            class: urlParams.get('class') || 'all',
+            label: urlParams.get('label') || 'all',
+            year: urlParams.get('year') || 'all',
+            artist: urlParams.get('artist') || 'all',
+            database: urlParams.get('database') || 'all',
+            location: urlParams.get('location') || 'all'
+          };
+          
+          // Save state
+          localStorage.setItem('annotationToolState', JSON.stringify(state));
+          
+          // Navigate to the new page
+          window.location.href = this.href;
+        });
+      }
     });
 });
   
