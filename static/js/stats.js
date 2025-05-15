@@ -90,34 +90,116 @@ function computeCorrectionLog(original, working) {
 function updateStats(correctionLog, detectionsData) {
   const active = correctionLog.filter(c => !c.undone);
 
-  // 1. Label Change Heatmap
+  // Calculate overall statistics
+  const totalImages = detectionsData.length;
+  const totalDetections = detectionsData.reduce((sum, img) => sum + (img.detections?.length || 0), 0);
+  const avgDetections = (totalDetections / totalImages).toFixed(1);
+  
+  // Get unique labels from all detections
+  const uniqueLabels = new Set();
+  detectionsData.forEach(img => {
+    img.detections?.forEach(det => uniqueLabels.add(det.label));
+  });
+
+  // Update the statistics cards with animation
+  function animateValue(element, start, end, duration) {
+    const range = end - start;
+    const increment = range / (duration / 16);
+    let current = start;
+    
+    const animate = () => {
+      current += increment;
+      if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
+        element.textContent = end;
+      } else {
+        element.textContent = Math.round(current);
+        requestAnimationFrame(animate);
+      }
+    };
+    
+    requestAnimationFrame(animate);
+  }
+
+  // Add hover effect to cards
+  document.querySelectorAll('.stat-card').forEach(card => {
+    card.addEventListener('mouseenter', () => {
+      card.style.transform = 'translateY(-2px)';
+      card.style.boxShadow = '0 6px 16px var(--card-shadow)';
+    });
+    
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = 'translateY(0)';
+      card.style.boxShadow = '0 4px 12px var(--card-shadow)';
+    });
+  });
+
+  // Update stats with animation
+  animateValue(document.getElementById('total-images'), 0, totalImages, 1000);
+  animateValue(document.getElementById('total-detections'), 0, totalDetections, 1000);
+  document.getElementById('avg-detections').textContent = avgDetections;
+  animateValue(document.getElementById('unique-labels'), 0, uniqueLabels.size, 1000);
+
+  // 1. Label Change Sankey Diagram
+  // Build label change flows
   const labelRenames = active.filter(
     c => c.type === 'label_change' && c.originalLabel !== c.newLabel
   );
-  const labelSet = new Set();
+  const sankeyCounts = {};
   labelRenames.forEach(c => {
-    labelSet.add(c.originalLabel);
-    labelSet.add(c.newLabel);
+    const key = c.originalLabel + '→' + c.newLabel;
+    sankeyCounts[key] = (sankeyCounts[key] || 0) + 1;
   });
-  const labels = Array.from(labelSet);
-  const heatmapMatrix = labels.map(() => labels.map(() => 0));
+  const sankeyLabelsSet = new Set();
   labelRenames.forEach(c => {
-    const i = labels.indexOf(c.originalLabel);
-    const j = labels.indexOf(c.newLabel);
-    heatmapMatrix[i][j] += 1;
+    sankeyLabelsSet.add(c.originalLabel);
+    sankeyLabelsSet.add(c.newLabel);
   });
-  Plotly.newPlot('label-change-heatmap', [{
-    z: heatmapMatrix,
-    x: labels,
-    y: labels,
-    type: 'heatmap',
-    colorscale: 'YlOrRd',
-    hoverongaps: false,
-    hovertemplate: 'Original: %{y}<br>Corrected: %{x}<br>Instances: %{z}<extra></extra>'
+  const sankeyLabels = Array.from(sankeyLabelsSet);
+  const sankeySource = [];
+  const sankeyTarget = [];
+  const sankeyValue = [];
+  Object.entries(sankeyCounts).forEach(([key, count]) => {
+    const [orig, corr] = key.split('→');
+    sankeySource.push(sankeyLabels.indexOf(orig));
+    sankeyTarget.push(sankeyLabels.indexOf(corr));
+    sankeyValue.push(count);
+  });
+  // Calculate incoming totals for each corrected label (target)
+  const incomingTotals = Array(sankeyLabels.length).fill(0);
+  sankeyTarget.forEach((targetIdx, i) => {
+    incomingTotals[targetIdx] += sankeyValue[i];
+  });
+  // Update labels for corrected labels (targets) to include the count
+  // Only update if the label is a target (i.e., appears as a corrected label)
+  const correctedLabelSet = new Set(labelRenames.map(c => c.newLabel));
+  const sankeyLabelsWithCounts = sankeyLabels.map((label, idx) =>
+    correctedLabelSet.has(label) ? `${label} (${incomingTotals[idx]})` : label
+  );
+  Plotly.newPlot('label-change-sankey', [{
+    type: 'sankey',
+    orientation: 'h',
+    node: {
+      pad: 15,
+      thickness: 20,
+      line: { color: 'black', width: 0.5 },
+      label: sankeyLabelsWithCounts,
+      color: '#cccccc',
+      hovertemplate: '%{label}<extra></extra>'
+    },
+    link: {
+      source: sankeySource,
+      target: sankeyTarget,
+      value: sankeyValue,
+      color: 'rgba(55,126,184,0.4)',
+      hovertemplate: '<b>%{source.label} → %{target.label}</b><br>Count: %{value}<extra></extra>'
+    }
   }], {
-    title: 'Label Change Heatmap',
-    xaxis: { title: 'Corrected Label' },
-    yaxis: { title: 'Original Label' }
+    margin: { t: 10, r: 10, b: 40, l: 60 },
+    font: { family: 'inherit', size: 13 },
+    paper_bgcolor: 'rgba(0,0,0,0)',
+    plot_bgcolor: 'rgba(0,0,0,0)',
+    autosize: true,
+    responsive: true
   });
 
   // 2. Most Frequently Added/Removed Labels
@@ -134,20 +216,57 @@ function updateStats(correctionLog, detectionsData) {
       y: addedLabels.map(l => added[l]),
       name: 'Added',
       type: 'bar',
-      marker: { color: 'green' }
+      marker: { 
+        color: '#377eb8', // blue (colorblind-friendly)
+        line: { width: 0 }
+      },
+      hovertemplate: '<b>Label:</b> %{x}<br><b>Added:</b> %{y}<extra></extra>',
+      text: addedLabels.map(l => added[l]),
+      textposition: 'outside',
+      textfont: { size: 12 }
     },
     {
       x: removedLabels,
       y: removedLabels.map(l => removed[l]),
       name: 'Removed',
       type: 'bar',
-      marker: { color: 'red' }
+      marker: { 
+        color: '#ff7f00', // orange (colorblind-friendly)
+        line: { width: 0 }
+      },
+      hovertemplate: '<b>Label:</b> %{x}<br><b>Removed:</b> %{y}<extra></extra>',
+      text: removedLabels.map(l => removed[l]),
+      textposition: 'outside',
+      textfont: { size: 12 }
     }
   ], {
     barmode: 'group',
-    title: 'Most Frequently Added/Removed Labels',
-    xaxis: { title: 'Label' },
-    yaxis: { title: 'Count' }
+    margin: { t: 10, r: 10, b: 60, l: 40 },
+    xaxis: { 
+      title: 'Label',
+      tickangle: -30,
+      tickfont: { size: 12 },
+      automargin: true,
+      gridcolor: 'rgba(128, 128, 128, 0.1)'
+    },
+    yaxis: { 
+      title: 'Count',
+      gridcolor: 'rgba(128, 128, 128, 0.1)',
+      automargin: true
+    },
+    legend: { 
+      orientation: 'h',
+      y: -0.2,
+      x: 0.5,
+      xanchor: 'center'
+    },
+    paper_bgcolor: 'rgba(0,0,0,0)',
+    plot_bgcolor: 'rgba(0,0,0,0)',
+    font: { family: 'inherit' },
+    bargap: 0.15,
+    bargroupgap: 0.1,
+    autosize: true,
+    responsive: true
   });
 
   // 3. Correction Type Breakdown
@@ -160,13 +279,25 @@ function updateStats(correctionLog, detectionsData) {
     labels: Object.keys(typeCounts),
     values: Object.values(typeCounts),
     type: 'pie',
-    textinfo: 'label+percent',
-    marker: { colors: ['#636EFA', '#EF553B', '#00CC96', '#AB63FA'] }
+    textinfo: 'percent+label',
+    textposition: 'inside',
+    hole: 0.4,
+    marker: { 
+      colors: ['#377eb8', '#ff7f00', '#984ea3', '#ffff33'],
+      line: { width: 0 }
+    },
+    hovertemplate: '<b>%{label}</b><br>Count: %{value}<br>Percentage: %{percent}<extra></extra>',
+    insidetextorientation: 'auto',
+    textfont: { size: 13 },
+    constraintext: 'both'
   }], {
-    title: 'Correction Type Breakdown',
-    height: 500,
-    width: 500,
-    margin: { t: 50, b: 50, l: 50, r: 50 }
+    margin: { t: 10, r: 10, b: 10, l: 10 },
+    paper_bgcolor: 'rgba(0,0,0,0)',
+    plot_bgcolor: 'rgba(0,0,0,0)',
+    font: { family: 'inherit' },
+    showlegend: false,
+    autosize: true,
+    responsive: true
   });
 
   // 4. Top Images with Most Corrections
@@ -181,11 +312,34 @@ function updateStats(correctionLog, detectionsData) {
     x: topImages.map(([img]) => img),
     y: topImages.map(([, count]) => count),
     type: 'bar',
-    marker: { color: '#FFA15A' }
+    marker: { 
+      color: '#9C27B0',
+      line: { width: 0 }
+    },
+    hovertemplate: '<b>Image:</b> %{x}<br><b>Corrections:</b> %{y}<extra></extra>',
+    text: topImages.map(([, count]) => count),
+    textposition: 'outside',
+    textfont: { size: 12 }
   }], {
-    title: 'Top Images with Most Corrections',
-    xaxis: { title: 'Image' },
-    yaxis: { title: 'Corrections' }
+    margin: { t: 10, r: 10, b: 60, l: 40 },
+    xaxis: { 
+      title: 'Image',
+      tickangle: -30,
+      tickfont: { size: 12 },
+      automargin: true,
+      gridcolor: 'rgba(128, 128, 128, 0.1)'
+    },
+    yaxis: { 
+      title: 'Corrections',
+      gridcolor: 'rgba(128, 128, 128, 0.1)',
+      automargin: true
+    },
+    paper_bgcolor: 'rgba(0,0,0,0)',
+    plot_bgcolor: 'rgba(0,0,0,0)',
+    font: { family: 'inherit' },
+    bargap: 0.3,
+    autosize: true,
+    responsive: true
   });
 }
 

@@ -169,10 +169,20 @@ document.addEventListener('DOMContentLoaded', function() {
             if (artwork.Location && artwork.Location !== "Unknown") {
                 locations.add(artwork.Location);
             }
-            // Categories/Labels
+            // Add categories and labels based on current filters
             artwork.detections.forEach(detection => {
-                if (detection.category) categories.add(detection.category);
-                if (detection.label) labels.add(detection.label);
+                // For categories: if we have a label filter, only add categories that match that label
+                if (detection.category) {
+                    if (filters.label === 'all' || detection.label === filters.label) {
+                        categories.add(detection.category);
+                    }
+                }
+                // For labels: if we have a category filter, only add labels that match that category
+                if (detection.label) {
+                    if (filters.category === 'all' || filters.category === 'random' || detection.category === filters.category) {
+                        labels.add(detection.label);
+                    }
+                }
             });
         });
         // Update dropdowns
