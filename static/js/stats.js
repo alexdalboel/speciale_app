@@ -5,12 +5,166 @@ fetch('/get_stats_data')
     const { original, working } = data;
     const correctionLog = computeCorrectionLog(original, working);
     updateStats(correctionLog, working);
+    initializeFilters(correctionLog, working, original);
   });
 
-// Compute a correction log (diff) between original and working detections using IoU-based matching
-function computeCorrectionLog(original, working) {
+// Global variables for filters
+let selectedCategory = null;
+let selectedLabel = null;
+let originalDetections = null;
+
+// Initialize category and label filters
+function initializeFilters(correctionLog, detectionsData, originalData) {
+  originalDetections = originalData;
+  // Get unique categories and labels
+  const categories = new Set();
+  const labels = new Set();
+  
+  detectionsData.forEach(img => {
+    img.detections?.forEach(det => {
+      if (det.category) categories.add(det.category);
+      if (det.label) labels.add(det.label);
+    });
+  });
+
+  // Create category buttons
+  const categoryContainer = document.getElementById('category-buttons');
+  const allCategoriesBtn = document.createElement('button');
+  allCategoriesBtn.textContent = 'All Categories';
+  allCategoriesBtn.className = 'filter-btn active';
+  allCategoriesBtn.onclick = () => {
+    document.querySelectorAll('#category-buttons .filter-btn').forEach(btn => btn.classList.remove('active'));
+    allCategoriesBtn.classList.add('active');
+    selectedCategory = null;
+    updateVisualizations(correctionLog, detectionsData);
+  };
+  categoryContainer.appendChild(allCategoriesBtn);
+
+  Array.from(categories).sort().forEach(category => {
+    const btn = document.createElement('button');
+    btn.textContent = category;
+    btn.className = 'filter-btn';
+    btn.dataset.category = category;
+    btn.onclick = () => {
+      document.querySelectorAll('#category-buttons .filter-btn').forEach(btn => btn.classList.remove('active'));
+      btn.classList.add('active');
+      selectedCategory = category;
+      updateLabelButtons(correctionLog, detectionsData);
+      updateVisualizations(correctionLog, detectionsData);
+    };
+    categoryContainer.appendChild(btn);
+  });
+
+  // Create label buttons
+  const labelContainer = document.getElementById('label-buttons');
+  const allLabelsBtn = document.createElement('button');
+  allLabelsBtn.textContent = 'All Labels';
+  allLabelsBtn.className = 'filter-btn active';
+  allLabelsBtn.onclick = () => {
+    document.querySelectorAll('#label-buttons .filter-btn').forEach(btn => btn.classList.remove('active'));
+    allLabelsBtn.classList.add('active');
+    selectedLabel = null;
+    updateVisualizations(correctionLog, detectionsData);
+  };
+  labelContainer.appendChild(allLabelsBtn);
+
+  // Add reset button functionality
+  document.getElementById('reset-filters').addEventListener('click', () => {
+    // Reset category filter
+    document.querySelectorAll('#category-buttons .filter-btn').forEach(btn => btn.classList.remove('active'));
+    categoryContainer.querySelector('button').classList.add('active');
+    selectedCategory = null;
+
+    // Reset label filter
+    document.querySelectorAll('#label-buttons .filter-btn').forEach(btn => btn.classList.remove('active'));
+    labelContainer.querySelector('button').classList.add('active');
+    selectedLabel = null;
+
+    // Update label buttons to show all labels
+    updateLabelButtons(correctionLog, detectionsData);
+
+    // Update visualizations
+    updateVisualizations(correctionLog, detectionsData);
+  });
+
+  updateLabelButtons(correctionLog, detectionsData);
+}
+
+// Update label buttons based on selected category
+function updateLabelButtons(correctionLog, detectionsData) {
+  const labelContainer = document.getElementById('label-buttons');
+  const allLabelsBtn = labelContainer.querySelector('button');
+  labelContainer.innerHTML = '';
+  labelContainer.appendChild(allLabelsBtn);
+
+  const labels = new Set();
+  detectionsData.forEach(img => {
+    img.detections?.forEach(det => {
+      if (det.label && (!selectedCategory || det.category === selectedCategory)) {
+        labels.add(det.label);
+      }
+    });
+  });
+
+  Array.from(labels).sort().forEach(label => {
+    const btn = document.createElement('button');
+    btn.textContent = label;
+    btn.className = 'filter-btn';
+    btn.onclick = () => {
+      document.querySelectorAll('#label-buttons .filter-btn').forEach(btn => btn.classList.remove('active'));
+      btn.classList.add('active');
+      selectedLabel = label;
+      updateVisualizations(correctionLog, detectionsData);
+    };
+    labelContainer.appendChild(btn);
+  });
+}
+
+// Update all visualizations based on current filters
+function updateVisualizations(correctionLog, detectionsData) {
+  const filteredLog = correctionLog.filter(c => {
+    if (selectedCategory) {
+      // For label changes, check the original label's category from original detections
+      if (c.type === 'label_change') {
+        const originalImg = originalDetections.find(img => img.image_file === c.imageId);
+        const originalDetection = originalImg?.detections?.find(d => d.label === c.originalLabel);
+        if (!originalDetection || originalDetection.category !== selectedCategory) return false;
+      } else {
+        // For other types, check the current label's category
+        const detection = detectionsData.find(img => img.image_file === c.imageId)
+          ?.detections?.find(d => d.label === (c.type === 'add' ? c.newLabel : c.originalLabel));
+        if (!detection || detection.category !== selectedCategory) return false;
+      }
+    }
+    if (selectedLabel) {
+      if (c.type === 'label_change') {
+        if (c.originalLabel !== selectedLabel) return false;
+      } else {
+        if (c.type === 'add' && c.newLabel !== selectedLabel) return false;
+        if (c.type === 'remove' && c.originalLabel !== selectedLabel) return false;
+      }
+    }
+    return true;
+  });
+
+  const filteredData = detectionsData.filter(img => {
+    if (selectedCategory) {
+      return img.detections?.some(d => d.category === selectedCategory);
+    }
+    if (selectedLabel) {
+      return img.detections?.some(d => d.label === selectedLabel);
+    }
+    return true;
+  });
+
+  updateStats(filteredLog, filteredData);
+}
+
+// Make functions available globally
+window.computeCorrectionLog = function(original, working) {
   const log = [];
   const IOU_THRESHOLD = 0.3; // Lower threshold to better handle resized boxes
+
   for (let i = 0; i < original.length; i++) {
     const origImg = original[i];
     const workImg = working[i];
@@ -18,27 +172,52 @@ function computeCorrectionLog(original, working) {
     const origDet = origImg.detections || [];
     const workDet = workImg.detections || [];
 
-    // Track which detections have been matched
-    const matchedOrig = new Set();
-    const matchedWork = new Set();
+    // Create a copy of working detections that we can modify
+    let remainingWorkDet = [...workDet];
+    let remainingOrigDet = [...origDet];
 
-    // First pass: Try to match detections with same label
-    origDet.forEach((od, oidx) => {
-      let bestMatchIdx = -1;
-      let bestIoU = 0;
-      workDet.forEach((wd, widx) => {
-        if (matchedWork.has(widx)) return;
-        const iouVal = iou(od.bbox, wd.bbox);
-        if (iouVal > bestIoU) {
-          bestIoU = iouVal;
-          bestMatchIdx = widx;
+    // First, find all exact matches (same label and similar bbox)
+    for (let oidx = remainingOrigDet.length - 1; oidx >= 0; oidx--) {
+      const od = remainingOrigDet[oidx];
+      let matchFound = false;
+
+      for (let widx = remainingWorkDet.length - 1; widx >= 0; widx--) {
+        const wd = remainingWorkDet[widx];
+        
+        if (od.label === wd.label) {
+          const iouVal = iou(od.bbox, wd.bbox);
+          if (iouVal > IOU_THRESHOLD) {
+            // Check if bbox changed
+            const bboxChanged = od.bbox.some((coord, idx) => Math.abs(coord - wd.bbox[idx]) > 0.0001);
+            if (bboxChanged) {
+              log.push({
+                imageId,
+                type: 'bbox_adjust',
+                originalLabel: od.label,
+                bbox: wd.bbox,
+                undone: false
+              });
+            }
+            // Remove matched detections
+            remainingOrigDet.splice(oidx, 1);
+            remainingWorkDet.splice(widx, 1);
+            matchFound = true;
+            break;
+          }
         }
-      });
-      if (bestIoU > IOU_THRESHOLD && bestMatchIdx !== -1) {
-        matchedOrig.add(oidx);
-        matchedWork.add(bestMatchIdx);
-        const wd = workDet[bestMatchIdx];
-        if (od.label !== wd.label) {
+      }
+    }
+
+    // Then, find label changes (different label but similar bbox)
+    for (let oidx = remainingOrigDet.length - 1; oidx >= 0; oidx--) {
+      const od = remainingOrigDet[oidx];
+      let matchFound = false;
+
+      for (let widx = remainingWorkDet.length - 1; widx >= 0; widx--) {
+        const wd = remainingWorkDet[widx];
+        const iouVal = iou(od.bbox, wd.bbox);
+        
+        if (iouVal > IOU_THRESHOLD) {
           log.push({
             imageId,
             type: 'label_change',
@@ -47,47 +226,41 @@ function computeCorrectionLog(original, working) {
             bbox: wd.bbox,
             undone: false
           });
+          // Remove matched detections
+          remainingOrigDet.splice(oidx, 1);
+          remainingWorkDet.splice(widx, 1);
+          matchFound = true;
+          break;
         }
-        // Only log bbox adjustment if the bbox coordinates are actually different
-        const bboxChanged = od.bbox.some((coord, idx) => Math.abs(coord - wd.bbox[idx]) > 0.0001);
-        if (bboxChanged) {
-          log.push({
-            imageId,
-            type: 'bbox_adjust',
-            originalLabel: od.label,
-            bbox: wd.bbox,
-            undone: false
-          });
-        }
-      } else {
-        // No match found: removal
-        log.push({
-          imageId,
-          type: 'remove',
-          originalLabel: od.label,
-          bbox: od.bbox,
-          undone: false
-        });
       }
+    }
+
+    // Any remaining original detections are deletions
+    remainingOrigDet.forEach(od => {
+      log.push({
+        imageId,
+        type: 'remove',
+        originalLabel: od.label,
+        bbox: od.bbox,
+        undone: false
+      });
     });
 
-    // For each working detection not matched, it's an addition
-    workDet.forEach((wd, widx) => {
-      if (!matchedWork.has(widx)) {
-        log.push({
-          imageId,
-          type: 'add',
-          newLabel: wd.label,
-          bbox: wd.bbox,
-          undone: false
-        });
-      }
+    // Any remaining working detections are additions
+    remainingWorkDet.forEach(wd => {
+      log.push({
+        imageId,
+        type: 'add',
+        newLabel: wd.label,
+        bbox: wd.bbox,
+        undone: false
+      });
     });
   }
   return log;
-}
+};
 
-function updateStats(correctionLog, detectionsData) {
+window.updateStats = function(correctionLog, detectionsData) {
   const active = correctionLog.filter(c => !c.undone);
 
   // Calculate overall statistics
@@ -269,37 +442,6 @@ function updateStats(correctionLog, detectionsData) {
     responsive: true
   });
 
-  // 3. Correction Type Breakdown
-  const typeCounts = {};
-  active.forEach(c => {
-    let type = c.type === 'remove' ? 'delete' : c.type;
-    typeCounts[type] = (typeCounts[type] || 0) + 1;
-  });
-  Plotly.newPlot('correction-type-breakdown', [{
-    labels: Object.keys(typeCounts),
-    values: Object.values(typeCounts),
-    type: 'pie',
-    textinfo: 'percent+label',
-    textposition: 'inside',
-    hole: 0.4,
-    marker: { 
-      colors: ['#377eb8', '#ff7f00', '#984ea3', '#ffff33'],
-      line: { width: 0 }
-    },
-    hovertemplate: '<b>%{label}</b><br>Count: %{value}<br>Percentage: %{percent}<extra></extra>',
-    insidetextorientation: 'auto',
-    textfont: { size: 13 },
-    constraintext: 'both'
-  }], {
-    margin: { t: 10, r: 10, b: 10, l: 10 },
-    paper_bgcolor: 'rgba(0,0,0,0)',
-    plot_bgcolor: 'rgba(0,0,0,0)',
-    font: { family: 'inherit' },
-    showlegend: false,
-    autosize: true,
-    responsive: true
-  });
-
   // 4. Top Images with Most Corrections
   const imageCounts = {};
   active.forEach(c => {
@@ -341,9 +483,9 @@ function updateStats(correctionLog, detectionsData) {
     autosize: true,
     responsive: true
   });
-}
+};
 
-function iou(boxA, boxB) {
+window.iou = function(boxA, boxB) {
   const [xA1, yA1, xA2, yA2] = boxA;
   const [xB1, yB1, xB2, yB2] = boxB;
   const x1 = Math.max(xA1, xB1);
@@ -355,4 +497,4 @@ function iou(boxA, boxB) {
   const boxBArea = (xB2 - xB1) * (yB2 - yB1);
   const unionArea = boxAArea + boxBArea - interArea;
   return unionArea === 0 ? 0 : interArea / unionArea;
-}
+};

@@ -435,6 +435,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!gallery || !artworksData) return;
 
         const filters = getCurrentFilterValues();
+        console.log('Current filters:', filters);
+        console.log('Total artworks before filtering:', artworksData.length);
         
         gallery.innerHTML = '';
 
@@ -490,6 +492,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 const detections = artwork.detections.filter(detection => {
                     const labelMatch = filters.label === 'all' || detection.label === filters.label;
                     const categoryMatch = filters.category === 'random' || filters.category === 'all' || detection.category === filters.category;
+                    console.log('Checking detection:', {
+                        artwork: artwork.image_url,
+                        detection: detection,
+                        labelMatch,
+                        categoryMatch,
+                        filters: {
+                            label: filters.label,
+                            category: filters.category
+                        }
+                    });
                     return labelMatch && categoryMatch;
                 });
                 
@@ -514,13 +526,22 @@ document.addEventListener('DOMContentLoaded', function() {
                     continue;
                 }
 
-                const hasMatchingDetection = artwork.detections.some(detection => {
-                    const labelMatch = filters.label === 'all' || detection.label === filters.label;
-                    const categoryMatch = filters.category === 'random' || filters.category === 'all' || detection.category === filters.category;
-                    return labelMatch && categoryMatch;
-                });
+                // If we have label or category filters, only show artworks with matching detections
+                if (filters.label !== 'all' || filters.category !== 'all') {
+                    const hasMatchingDetection = artwork.detections.some(detection => {
+                        const labelMatch = filters.label === 'all' || detection.label === filters.label;
+                        const categoryMatch = filters.category === 'random' || filters.category === 'all' || detection.category === filters.category;
+                        return labelMatch && categoryMatch;
+                    });
 
-                if (hasMatchingDetection) {
+                    if (hasMatchingDetection) {
+                        matchingItems.push({
+                            type: 'image',
+                            artwork: artwork
+                        });
+                    }
+                } else {
+                    // If no label or category filters, show all artworks
                     matchingItems.push({
                         type: 'image',
                         artwork: artwork
@@ -869,26 +890,29 @@ document.addEventListener('DOMContentLoaded', function() {
         // Update pagination controls
         const prevButton = document.getElementById('prevPage');
         const nextButton = document.getElementById('nextPage');
-        const pageSpan = paginationContainer.querySelector('span');
+        const pageSpan = paginationContainer?.querySelector('span');
 
-        prevButton.disabled = currentPage === 1;
-        nextButton.disabled = currentPage === totalPages;
-        pageSpan.textContent = `${currentPage}/${totalPages}`;
+        // Only update pagination if elements exist
+        if (prevButton && nextButton && pageSpan) {
+            prevButton.disabled = currentPage === 1;
+            nextButton.disabled = currentPage === totalPages;
+            pageSpan.textContent = `${currentPage}/${totalPages}`;
 
-        // Add event listeners for pagination buttons
-        prevButton.onclick = () => {
-            if (currentPage > 1) {
-                currentPage--;
-                displayContent();
-            }
-        };
+            // Add event listeners for pagination buttons
+            prevButton.onclick = () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    displayContent();
+                }
+            };
 
-        nextButton.onclick = () => {
-            if (currentPage < totalPages) {
-                currentPage++;
-                displayContent();
-            }
-        };
+            nextButton.onclick = () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    displayContent();
+                }
+            };
+        }
 
         // Initialize or re-initialize panzoom on #gallery
         if (window.panzoomInstance) {
