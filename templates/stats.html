@@ -57,9 +57,29 @@
         <div id="top-images-corrections" style="flex: 1 1 0; min-height: 0; overflow: hidden;"></div>
       </div>
     </div>
-    <div style="display: flex; flex-direction: column; min-height: 0; overflow: hidden; align-items: center;">
-      <h3 style="margin: 0 0 8px 0; font-size: 1rem;">Correction Type Breakdown</h3>
-      <div id="correction-type-breakdown" style="flex: 1; min-height: 0; max-height: 500px; width: 100%; max-width: 500px; overflow: hidden;"></div>
+    <div style="display: flex; flex-direction: column; gap: 12px; min-height: 0; overflow: hidden; height: 100%;">
+      <div class="filter-card">
+        <div class="filter-header">
+          <i class="fas fa-filter"></i>
+          <h3>Category Filter</h3>
+        </div>
+        <div id="category-buttons" class="filter-buttons">
+          <!-- Category buttons will be added here dynamically -->
+        </div>
+      </div>
+      <div class="filter-card">
+        <div class="filter-header">
+          <i class="fas fa-tag"></i>
+          <h3>Label Filter</h3>
+        </div>
+        <div id="label-buttons" class="filter-buttons">
+          <!-- Label buttons will be added here dynamically -->
+        </div>
+      </div>
+      <button id="reset-filters" class="reset-btn">
+        <i class="fas fa-undo"></i>
+        Reset Filters
+      </button>
     </div>
   </div>
 </div>

@@ -126,6 +126,19 @@ window.addEventListener('DOMContentLoaded', function () {
         background: #ffcdd2 !important;
         color: #b71c1c !important;
       }
+      .tools-panel {
+        width: 220px;
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+        padding: 1rem;
+        margin-left: 1rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        overflow-y: auto; /* Enable vertical scrolling */
+        max-height: 100%; /* Ensure it doesn't exceed parent height */
+      }
     `;
     document.head.appendChild(style);
   
@@ -1531,8 +1544,8 @@ window.addEventListener('DOMContentLoaded', function () {
         .then(res => res.json())
         .then(data => {
           const { original, working } = data;
-          const correctionLog = computeCorrectionLog(original, working);
-          updateStats(correctionLog, working);
+          const correctionLog = window.computeCorrectionLog(original, working);
+          window.updateStats(correctionLog, working);
         })
         .catch(error => {
           console.error('Error updating stats:', error);
@@ -2018,7 +2031,6 @@ window.addEventListener('DOMContentLoaded', function () {
       
       const currentUrlParams = new URLSearchParams(window.location.search);
       const filters = getCurrentFilterValues();
-      const currentPage = currentUrlParams.get('page') || '1';
 
       // Update URL parameters
       Object.entries(filters).forEach(([key, value]) => {
@@ -2029,10 +2041,8 @@ window.addEventListener('DOMContentLoaded', function () {
         }
       });
 
-      // Only reset to first page when explicitly changing filters
-      if (!currentUrlParams.has('page')) {
-        currentUrlParams.set('page', currentPage);
-      }
+      // Always reset to page 1 when filters change
+      currentUrlParams.set('page', '1');
       
       // Save state before redirecting
       saveCurrentState();

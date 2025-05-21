@@ -155,6 +155,9 @@ def update_detections():
         new_detections = data['detections']
         current_page = int(request.args.get('page', 1))
         
+        print(f"Updating detections for image: {image_file}")
+        print(f"New detections: {json.dumps(new_detections, indent=2)}")
+        
         # Get all current filter parameters
         filter_class = request.args.get('class', 'all')
         filter_label = request.args.get('label', 'all')
@@ -179,6 +182,7 @@ def update_detections():
         # Save the updated data back to the working JSON file
         with open(WORKING_PATH, 'w') as f:
             json.dump(working_detections_data, f, indent=2)
+            print(f"Successfully saved updated detections to {WORKING_PATH}")
         
         return jsonify({
             'success': True,
@@ -237,6 +241,25 @@ def get_labels():
 
 @app.route('/api/artworks')
 def get_artworks():
+    # Reload working detections data from file
+    global working_detections_data
+    try:
+        with open(WORKING_PATH, 'r') as f:
+            working_detections_data = json.load(f)
+            print(f"Loaded {len(working_detections_data)} artworks from working file")
+            # Print all unique labels and categories
+            all_labels = set()
+            all_categories = set()
+            for artwork in working_detections_data:
+                for detection in artwork.get('detections', []):
+                    all_labels.add(detection.get('label'))
+                    all_categories.add(detection.get('category'))
+            print("Unique labels:", sorted(list(all_labels)))
+            print("Unique categories:", sorted(list(all_categories)))
+    except Exception as e:
+        print(f"Error loading working detections: {e}")
+        return jsonify([])
+
     # Return all artworks with their detections and metadata
     artworks = []
     for image_data in working_detections_data:
